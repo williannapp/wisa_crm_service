@@ -115,83 +115,190 @@ func ExtractTenantFromJWT(claims jwt.MapClaims) (uuid.UUID, error) {
 
 ### 5. Modelagem de dados completa
 
+A estrutura abaixo considera tenants (clientes), produtos, assinaturas, pagamentos, usuários e perfis de acesso por produto. Inclui melhorias de integridade, índices e tabelas auxiliares para autenticação e auditoria.
+
 ```sql
--- Tenant: entidade raiz do sistema multi-tenant
+-- Enums para padronização de status e tipos
+CREATE TYPE tenant_type AS ENUM ('person', 'company');          -- pessoa física ou jurídica
+CREATE TYPE tenant_status AS ENUM ('active', 'inactive', 'blocked');
+CREATE TYPE product_status AS ENUM ('active', 'inactive', 'blocked');
+CREATE TYPE subscription_status AS ENUM ('pending', 'active', 'suspended', 'canceled');
+CREATE TYPE subscription_type AS ENUM ('free', 'payment');      -- assinatura gratuita ou paga
+CREATE TYPE payment_status AS ENUM ('pending', 'paid', 'failed', 'refunded');
+CREATE TYPE user_status AS ENUM ('active', 'blocked');
+CREATE TYPE access_profile AS ENUM ('admin', 'operator', 'view'); -- operador
+
+-- Tenants: entidade raiz (clientes do sistema)
 CREATE TABLE tenants (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug        VARCHAR(63) UNIQUE NOT NULL,  -- ex: "cliente1"
-    name        VARCHAR(255) NOT NULL,
-    status      VARCHAR(20) NOT NULL DEFAULT 'active',  -- active, suspended, cancelled
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),     -- identificador único
+    slug        VARCHAR(63) UNIQUE NOT NULL,                    -- identificador amigável na URL (ex: cliente1)
+    name        VARCHAR(255) NOT NULL,                          -- nome do tenant
+    tax_id      VARCHAR(18) NOT NULL,                          -- CNPJ (14 dígitos) ou CPF (11 dígitos)
+    type        tenant_type NOT NULL,                           -- pessoa física ou jurídica
+    status      tenant_status NOT NULL DEFAULT 'active',        -- estado do tenant
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data de criação
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data da última atualização
+    CONSTRAINT chk_tax_id_length CHECK (
+        (type = 'company' AND LENGTH(tax_id) = 14) OR
+        (type = 'person' AND LENGTH(tax_id) = 11)
+    )
 );
 
--- Assinatura: controla acesso ao sistema
+-- Products: catálogo de produtos/planos (escopo global)
+CREATE TABLE products (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),     -- identificador único
+    slug        VARCHAR(63) UNIQUE NOT NULL,                    -- identificador amigável na URL
+    name        VARCHAR(255) NOT NULL,                          -- nome do produto
+    status      product_status NOT NULL DEFAULT 'active',       -- estado do produto
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data de criação
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()              -- data da última atualização
+);
+
+-- Subscriptions: assinaturas vinculando tenant a produto
 CREATE TABLE subscriptions (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID NOT NULL REFERENCES tenants(id),
-    plan            VARCHAR(50) NOT NULL,  -- free, starter, pro, enterprise
-    status          VARCHAR(20) NOT NULL DEFAULT 'active',
-    expires_at      TIMESTAMPTZ NOT NULL,
-    grace_period_end TIMESTAMPTZ,  -- período de tolerância após vencimento
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- identificador único
+    tenant_id       UUID NOT NULL REFERENCES tenants(id),       -- tenant associado
+    product_id      UUID NOT NULL REFERENCES products(id),     -- produto associado
+    type            subscription_type NOT NULL DEFAULT 'payment', -- gratuito ou pago
+    status          subscription_status NOT NULL DEFAULT 'pending', -- estado da assinatura
+    start_date      DATE NOT NULL,                             -- data de início
+    end_date        DATE NOT NULL,                             -- data de término
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data de criação
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data da última atualização
+    CONSTRAINT chk_subscription_dates CHECK (end_date >= start_date)
 );
 
--- Usuários vinculados a um tenant
+-- Payments: pagamentos vinculados a assinaturas
+CREATE TABLE payments (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- identificador único
+    subscription_id UUID NOT NULL REFERENCES subscriptions(id),-- assinatura associada
+    amount          DECIMAL(12, 2) NOT NULL,                   -- valor do pagamento
+    payment_date    DATE NOT NULL,                             -- data do pagamento
+    status          payment_status NOT NULL DEFAULT 'pending',  -- estado do pagamento (pending, active, suspended, canceled)
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data de criação
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data da última atualização
+    CONSTRAINT chk_amount_positive CHECK (amount >= 0)
+);
+
+-- Users: usuários vinculados a um tenant
 CREATE TABLE users (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id       UUID NOT NULL REFERENCES tenants(id),
-    email           VARCHAR(320) NOT NULL,
-    password_hash   VARCHAR(72) NOT NULL,  -- bcrypt output max length
-    full_name       VARCHAR(255),
-    role            VARCHAR(50) NOT NULL DEFAULT 'user',
-    status          VARCHAR(20) NOT NULL DEFAULT 'active',
-    failed_attempts INTEGER NOT NULL DEFAULT 0,
-    locked_until    TIMESTAMPTZ,
-    last_login_at   TIMESTAMPTZ,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- identificador único
+    tenant_id       UUID NOT NULL REFERENCES tenants(id),       -- tenant associado
+    name            VARCHAR(255) NOT NULL,                      -- nome completo
+    email           VARCHAR(320) NOT NULL,                     -- e-mail (único por tenant)
+    password_hash   VARCHAR(72) NOT NULL,                      -- hash bcrypt da senha
+    status          user_status NOT NULL DEFAULT 'active',     -- estado do usuário
+    last_login_at   TIMESTAMPTZ,                               -- última data de login
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data de criação
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data da última atualização
     UNIQUE (tenant_id, email)
 );
 
--- Refresh tokens: controle de sessões ativas
+-- User Product Access: perfil de acesso do usuário por produto
+CREATE TABLE user_product_access (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- identificador único
+    user_id         UUID NOT NULL REFERENCES users(id),        -- usuário associado
+    product_id      UUID NOT NULL REFERENCES products(id),     -- produto associado
+    tenant_id       UUID NOT NULL REFERENCES tenants(id),       -- tenant (para RLS)
+    access_profile  access_profile NOT NULL DEFAULT 'view',    -- perfil: admin, operador ou visualização (admin, operador, view)
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data de criação
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),        -- data da última atualização
+    UNIQUE (user_id, product_id)
+);
+-- Nota: tenant_id deve ser igual ao tenant do user; validar via trigger ou na aplicação
+
+-- Refresh tokens: controle de sessões ativas (autenticação)
 CREATE TABLE refresh_tokens (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id     UUID NOT NULL REFERENCES users(id),
-    tenant_id   UUID NOT NULL REFERENCES tenants(id),
-    token_hash  CHAR(64) NOT NULL UNIQUE,  -- SHA-256 do token
-    expires_at  TIMESTAMPTZ NOT NULL,
-    revoked_at  TIMESTAMPTZ,
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    ip_address  INET,
-    user_agent  TEXT
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),     -- identificador único
+    user_id     UUID NOT NULL REFERENCES users(id),             -- usuário associado
+    tenant_id   UUID NOT NULL REFERENCES tenants(id),           -- tenant (para RLS)
+    token_hash  CHAR(64) NOT NULL UNIQUE,                       -- hash SHA-256 do token
+    expires_at  TIMESTAMPTZ NOT NULL,                           -- data de expiração
+    revoked_at  TIMESTAMPTZ,                                    -- data de revogação (se houver)
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),              -- data de criação
+    ip_address  INET,                                           -- IP do cliente
+    user_agent  TEXT                                            -- user-agent do navegador
 );
 
--- Audit log: rastreabilidade de eventos de segurança
+-- Audit logs: rastreabilidade de eventos de segurança
 CREATE TABLE audit_logs (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id   UUID NOT NULL REFERENCES tenants(id),
-    user_id     UUID REFERENCES users(id),  -- nullable para tentativas de login com email inválido
-    event_type  VARCHAR(50) NOT NULL,  -- login_success, login_failed, token_refreshed, logout, account_locked
-    ip_address  INET,
-    user_agent  TEXT,
-    metadata    JSONB,  -- dados adicionais específicos do evento
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-) PARTITION BY RANGE (created_at);  -- particionamento por data
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),     -- identificador único
+    tenant_id   UUID NOT NULL REFERENCES tenants(id),           -- tenant associado
+    user_id     UUID REFERENCES users(id),                     -- usuário (nulo se login com email inválido)
+    event_type  VARCHAR(50) NOT NULL,                          -- tipo do evento (login_success, login_failed, etc.)
+    ip_address  INET,                                           -- IP do cliente
+    user_agent  TEXT,                                           -- user-agent do navegador
+    metadata    JSONB,                                          -- dados adicionais do evento
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()              -- data do evento
+) PARTITION BY RANGE (created_at);
 
--- Índices para performance multi-tenant
-CREATE INDEX CONCURRENTLY idx_users_tenant_email    ON users (tenant_id, email);
-CREATE INDEX CONCURRENTLY idx_users_tenant_status   ON users (tenant_id, status);
-CREATE INDEX CONCURRENTLY idx_subscriptions_tenant  ON subscriptions (tenant_id, status, expires_at);
-CREATE INDEX CONCURRENTLY idx_refresh_tokens_hash   ON refresh_tokens (token_hash) WHERE revoked_at IS NULL;
-CREATE INDEX CONCURRENTLY idx_audit_tenant_date     ON audit_logs (tenant_id, created_at DESC);
+-- Índices para performance multi-tenant e consultas frequentes
+CREATE INDEX idx_tenants_slug_status       ON tenants (slug, status);
+CREATE INDEX idx_products_slug_status      ON products (slug, status);
+CREATE INDEX idx_subscriptions_tenant      ON subscriptions (tenant_id, status);
+CREATE INDEX idx_subscriptions_product     ON subscriptions (product_id, status);
+CREATE INDEX idx_subscriptions_dates       ON subscriptions (tenant_id, start_date, end_date);
+CREATE INDEX idx_payments_subscription      ON payments (subscription_id);
+CREATE INDEX idx_payments_status_date       ON payments (status, payment_date);
+CREATE INDEX idx_users_tenant_email        ON users (tenant_id, email);
+CREATE INDEX idx_users_tenant_status       ON users (tenant_id, status);
+CREATE INDEX idx_user_product_access_user   ON user_product_access (user_id);
+CREATE INDEX idx_user_product_access_tenant ON user_product_access (tenant_id, product_id);
+CREATE INDEX idx_refresh_tokens_hash        ON refresh_tokens (token_hash) WHERE revoked_at IS NULL;
+CREATE INDEX idx_audit_tenant_date          ON audit_logs (tenant_id, created_at DESC);
 
 -- Row-Level Security
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_product_access ENABLE ROW LEVEL SECURITY;
 ALTER TABLE refresh_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+-- Função e triggers para updated_at
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_tenants_updated_at BEFORE UPDATE ON tenants
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_products_updated_at BEFORE UPDATE ON products
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_subscriptions_updated_at BEFORE UPDATE ON subscriptions
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_payments_updated_at BEFORE UPDATE ON payments
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_user_product_access_updated_at BEFORE UPDATE ON user_product_access
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 ```
+
+**Diagrama de relacionamentos (resumo):**
+
+```
+tenants (1) ──< (N) subscriptions >── (N) products
+    │                    │
+    │                    └──< (N) payments
+    │
+    └──< (N) users ──< (N) user_product_access >── (N) products
+```
+
+**Melhorias incorporadas:**
+
+| Aspecto | Decisão |
+|---------|---------|
+| **tax_id** | Campo único com CHECK constraint: CNPJ 14 dígitos (company) ou CPF 11 dígitos (person) |
+| **amount (Payments)** | `DECIMAL(12,2)` e CHECK `>= 0` para evitar valores negativos inválidos |
+| **user_product_access** | `tenant_id` desnormalizado para RLS; UNIQUE (user_id, product_id); validação de consistência tenant via trigger ou aplicação |
+| **subscription_type** | Enum (free, payment) para classificar assinaturas gratuitas ou pagas |
+| **ENUMs** | Tipos nativos PostgreSQL para status e perfis — integridade e performance |
+| **Comentários** | Descrição em português em cada campo via comentários SQL |
+| **Índices** | Cobertura das queries esperadas: login, validação de assinatura, listagem por tenant |
 
 ### 6. Hierarquia de isolamento (defense in depth)
 

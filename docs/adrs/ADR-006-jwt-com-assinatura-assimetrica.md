@@ -79,7 +79,7 @@ O `wisa-crm-service` mantém a **chave privada RSA de 4096 bits exclusivamente e
     "sub": "usr_01HXYZ...",
     "aud": "cliente1.seusistema.com",
     "tenant_id": "ten_01HXYZ...",
-    "plan": "pro",
+    "user_access_profile": "admin",
     "jti": "01HXYZ...",
     "iat": 1740000000,
     "exp": 1740000900,
@@ -96,7 +96,7 @@ O `wisa-crm-service` mantém a **chave privada RSA de 4096 bits exclusivamente e
 | `sub` | user_id (opaque ULID) | Identifica o usuário sem expor dados PII no token |
 | `aud` | domínio do cliente | **Crítico:** impede que token do Cliente A seja aceito pelo Cliente B |
 | `tenant_id` | tenant ULID | Identificação de tenant para lógica multi-tenant no cliente |
-| `plan` | nome do plano | Permite controle de funcionalidades por plano sem consulta ao banco |
+| `user_access_profile` | perfil de acesso (ex: admin, editor, viewer) | Define o perfil de acesso do usuário para RBAC — permite que os sistemas clientes apliquem controles de autorização sem consulta ao IdP em cada requisição |
 | `jti` | JWT ID único (ULID) | Permite revogação individual de token e prevenção de replay attacks |
 | `iat` | issued at | Momento de emissão |
 | `exp` | expiration | **Curta duração:** 15 minutos para tokens de acesso |
@@ -157,6 +157,16 @@ Resposta:
   ]
 }
 ```
+
+| Campo | O que é                                  |
+| ----- | ---------------------------------------- |
+| `kty` | Key Type (RSA)                           |
+| `use` | Uso da chave (sig = assinatura)          |
+| `alg` | Algoritmo esperado                       |
+| `kid` | Identificador da chave                   |
+| `n`   | Modulus da chave pública RSA (base64url) |
+| `e`   | Expoente (geralmente AQAB = 65537)       |
+
 
 Sistemas clientes podem fazer cache desta resposta (com TTL de 24h) e auto-atualizar durante rotação de chaves.
 
