@@ -14,7 +14,8 @@ docs/tasks/
 ├── TRACKER.md              ← Você está aqui (visão geral)
 ├── README.md               ← Guia para criar novas features/fixes
 ├── features/               ← Features em desenvolvimento
-│   └── 001-estrutura-inicial-backend/
+│   ├── 001-estrutura-inicial-backend/
+│   └── 002-configuracao-banco-dados/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -35,6 +36,7 @@ docs/tasks/
 | Feature/Fix | Descrição | Progresso | Status |
 |-------------|-----------|-----------|--------|
 | [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 6/6 | Concluída |
+| [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 0/5 | Pendente |
 
 ---
 
@@ -62,6 +64,14 @@ docs/tasks/
 - **Features/fixes concluídos:** 001-estrutura-inicial-backend
 - **Tasks concluídas:** 6/6 fases
 - **Próximas atividades:** Implementar próxima feature conforme TRACKER
+
+### Sessão 3 — 2026-03-04
+- **Atividades realizadas:**
+  - Planejamento da Feature 002 — Configuração do banco de dados
+  - Criação de documentos de planejamento para as 5 fases
+- **Features/fixes criados:** 002-configuracao-banco-dados (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-base-banco.md](features/002-configuracao-banco-dados/fase-1-estrutura-base-banco.md)
 
 ---
 
