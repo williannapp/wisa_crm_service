@@ -10,12 +10,12 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Schema `wisa_crm_db` e tipos ENUM | 0/1 | Pendente |
-| Fase 2 | Tabelas `tenants` e `products` | 0/1 | Pendente |
-| Fase 3 | Tabelas `subscriptions` e `payments` | 0/1 | Pendente |
-| Fase 4 | Tabelas `users` e `user_product_access` | 0/1 | Pendente |
-| Fase 5 | Tabelas `refresh_tokens` e `audit_logs` | 0/1 | Pendente |
-| Fase 6 | Índices, Row-Level Security e triggers auxiliares | 0/1 | Pendente |
+| Fase 1 | Schema `wisa_crm_db` e tipos ENUM | 1/1 | Concluída |
+| Fase 2 | Tabelas `tenants` e `products` | 1/1 | Concluída |
+| Fase 3 | Tabelas `subscriptions` e `payments` | 1/1 | Concluída |
+| Fase 4 | Tabelas `users` e `user_product_access` | 1/1 | Concluída |
+| Fase 5 | Tabelas `refresh_tokens` e `audit_logs` | 1/1 | Concluída |
+| Fase 6 | Índices, Row-Level Security e triggers auxiliares | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -28,12 +28,12 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar schema `wisa_crm_db` no banco e definir todos os tipos ENUM (tenant_type, tenant_status, product_status, subscription_status, subscription_type, payment_status, user_status, access_profile)
-- [ ] Fase 2 — Implementar tabelas `tenants` e `products` com constraints e comentários
-- [ ] Fase 3 — Implementar tabelas `subscriptions` e `payments` com relacionamentos e constraints
-- [ ] Fase 4 — Implementar tabelas `users` e `user_product_access` com relacionamentos e unicidade
-- [ ] Fase 5 — Implementar tabelas `refresh_tokens` e `audit_logs` (com particionamento em audit_logs)
-- [ ] Fase 6 — Criar índices de performance, habilitar Row-Level Security com políticas, triggers de `updated_at`
+- [x] Fase 1 — Criar schema `wisa_crm_db` no banco e definir todos os tipos ENUM (tenant_type, tenant_status, product_status, subscription_status, subscription_type, payment_status, user_status, access_profile)
+- [x] Fase 2 — Implementar tabelas `tenants` e `products` com constraints e comentários
+- [x] Fase 3 — Implementar tabelas `subscriptions` e `payments` com relacionamentos e constraints
+- [x] Fase 4 — Implementar tabelas `users` e `user_product_access` com relacionamentos e unicidade
+- [x] Fase 5 — Implementar tabelas `refresh_tokens` e `audit_logs` (com particionamento em audit_logs)
+- [x] Fase 6 — Criar índices de performance, habilitar Row-Level Security com políticas, triggers de `updated_at`
 
 ## Dependências entre Fases
 
