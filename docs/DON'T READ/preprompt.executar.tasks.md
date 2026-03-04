@@ -1,4 +1,4 @@
-# Feature: "001-estrutura-inicial-backend"
+# Feature: "002-configuracao-banco-dados"
 
 ## Seu papel:
 

@@ -10,11 +10,11 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Estrutura base do banco de dados (conexão GORM, sem queries/tabelas) | 0/1 | Pendente |
-| Fase 2 | Variáveis de ambiente para conexão com o banco | 0/1 | Pendente |
-| Fase 3 | Containers (Dockerfile PostgreSQL + docker-compose.yml) | 0/1 | Pendente |
-| Fase 4 | Documentação (como rodar backend + docs/backend/vps-configurations.md) | 0/1 | Pendente |
-| Fase 5 | ORM (estrutura base, migrations, rollback) | 0/1 | Pendente |
+| Fase 1 | Estrutura base do banco de dados (conexão GORM, sem queries/tabelas) | 1/1 | Concluída |
+| Fase 2 | Variáveis de ambiente para conexão com o banco | 1/1 | Concluída |
+| Fase 3 | Containers (Dockerfile PostgreSQL + docker-compose.yml) | 1/1 | Concluída |
+| Fase 4 | Documentação (como rodar backend + docs/backend/vps-configurations.md) | 1/1 | Concluída |
+| Fase 5 | ORM (estrutura base, migrations, rollback) | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -26,11 +26,11 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Adicionar estrutura base do banco: pastas, conexão GORM, pool de conexões; sem queries ou tabelas
-- [ ] Fase 2 — Criar variáveis de ambiente necessárias para conexão (DATABASE_URL em .env.example)
-- [ ] Fase 3 — Criar Dockerfile para PostgreSQL e docker-compose.yml na raiz do projeto
-- [ ] Fase 4 — Documentação em docs/backend/ explicando como rodar o backend; docs/backend/vps-configurations.md para VPS
-- [ ] Fase 5 — Adaptações ORM, estrutura base, migrations versionadas (golang-migrate) e rollback
+- [x] Fase 1 — Adicionar estrutura base do banco: pastas, conexão GORM, pool de conexões; sem queries ou tabelas
+- [x] Fase 2 — Criar variáveis de ambiente necessárias para conexão (DATABASE_URL em .env.example)
+- [x] Fase 3 — Criar Dockerfile para PostgreSQL e docker-compose.yml na raiz do projeto
+- [x] Fase 4 — Documentação em docs/backend/ explicando como rodar o backend; docs/backend/vps-configurations.md para VPS
+- [x] Fase 5 — Adaptações ORM, estrutura base, migrations versionadas (golang-migrate) e rollback
 
 ## Dependências entre Fases
 

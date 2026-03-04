@@ -36,7 +36,7 @@ docs/tasks/
 | Feature/Fix | Descrição | Progresso | Status |
 |-------------|-----------|-----------|--------|
 | [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 6/6 | Concluída |
-| [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 0/5 | Pendente |
+| [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
 
 ---
 
@@ -72,6 +72,18 @@ docs/tasks/
 - **Features/fixes criados:** 002-configuracao-banco-dados (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-base-banco.md](features/002-configuracao-banco-dados/fase-1-estrutura-base-banco.md)
+
+### Sessão 4 — 2026-03-04
+- **Atividades realizadas:**
+  - Implementação completa da Feature 002 — Configuração do banco de dados
+  - Fase 1: persistence/database.go com GORM, pool configurado; main.go com DATABASE_URL
+  - Fase 2: .env.example com DATABASE_URL documentada
+  - Fase 3: backend/docker/database/Dockerfile, backend/docker/backend/Dockerfile, docker-compose.yml (postgres + backend)
+  - Fase 5: migrations 000001_init_schema, cmd/migrate, Makefile
+  - Fase 4: docs/backend/README.md, docs/backend/vps-configurations.md
+- **Features/fixes concluídos:** 002-configuracao-banco-dados
+- **Tasks concluídas:** 5/5 fases
+- **Próximas atividades:** Implementar próxima feature conforme TRACKER
 
 ---
 
