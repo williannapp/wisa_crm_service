@@ -18,8 +18,7 @@ Você possui forte domínio de:
 - Controle de concorrência
 - Hardening de servidores
 - Boas práticas de JWT e autenticação baseada em chave pública/privada
-- Modelagem de banco PostgreSQL em ambientes multi-tenants.
-
+- Modelagem de banco PostgreSQL em ambientes multi-tenants
 
 ## Antes de receber sua tarefa, faça:
 
@@ -27,9 +26,9 @@ Você possui forte domínio de:
 - Em seguida, você deve ler o arquivo @docs/tasks/TRACKER.md e entender quais features já foram implementadas;
 - Ler o documento @docs/tasks/TRACKER.md, e entender como funciona o gerenciamento de implementações de novas features.
 - Ler os documentos de guidelines existentes em @docs/code_guidelines.
+- Ler os documentos de adrs existentes em @docs/adrs
 
-
-## Entendido o que é este projeto, você deverá **pensar e planejar** detalhadamente a implementação os seguintes items:
+## Entendido o que é este projeto, você deverá **pensar e planejar** detalhadamente a implementação dos seguintes items:
 
 1. Blá, blá blá..
 
@@ -41,6 +40,9 @@ Você possui forte domínio de:
 
     **IMPORTANTE:** Se uma feature for considerada grande, a divida em etapas, separando-as em pequenas tasks, sempre conforme orientado na documentação já estudada. Neste caso, tome como exemplo, a documentação da última feature existente, onde cada fase foi criado um documento separado.
 
+    **IMPORTANTE:** Não implemente nenhum código na estrutura. Seu papel é criar **SOMENTE** o planejamento.
+
     - Repetir os passos até terminar todos os itens solicitados para implementação.
 
 2. Garanta que o plano de implementação atenda os requisitos presentes no @docs/code_guidelines
+3. Garanta que o plano de implementação atenda os requisitos presentes no @docs/adrs

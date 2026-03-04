@@ -14,7 +14,7 @@ docs/tasks/
 ├── TRACKER.md              ← Você está aqui (visão geral)
 ├── README.md               ← Guia para criar novas features/fixes
 ├── features/               ← Features em desenvolvimento
-│   └── (vazio — para futuras features)
+│   └── 001-estrutura-inicial-backend/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -34,7 +34,7 @@ docs/tasks/
 
 | Feature/Fix | Descrição | Progresso | Status |
 |-------------|-----------|-----------|--------|
-| — | *(nenhuma feature ou fix cadastrada ainda)* | 0/0 | — |
+| [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 0/6 | Pendente |
 
 ---
 
@@ -42,12 +42,13 @@ docs/tasks/
 
 *(Registre aqui as atividades significativas de cada sessão de desenvolvimento)*
 
-### Sessão 1 — YYYY-MM-DD
+### Sessão 1 — 2026-03-04
 - **Atividades realizadas:**
-  - ...
-- **Features/fixes criados:** —
+  - Planejamento da Feature 001 — Estrutura inicial do backend
+  - Criação de documentos de planejamento para as 6 fases
+- **Features/fixes criados:** 001-estrutura-inicial-backend (apenas planejamento)
 - **Tasks concluídas:** —
-- **Próximas atividades:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-diretorios.md](features/001-estrutura-inicial-backend/fase-1-estrutura-diretorios.md)
 
 ---
 
