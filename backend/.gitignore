@@ -1,0 +1,8 @@
+# Go — binários e artefatos
+wisa-crm-service
+wisa-crm-service.exe
+*.test
+*.out
+vendor/
+go.work
+go.work.sum

@@ -1,0 +1,65 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+wisa-crm-service
+backend/wisa-crm-service
+
+# Go
+backend/vendor/
+*.test
+*.out
+go.work
+go.work.sum
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+.venv/
+!*.pem.example
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build
+dist/
+build/
+out/
+
+# Node (frontend)
+node_modules/
+frontend/node_modules/
+.npm
+.yarn/
+.pnp.*
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# Coverage
+coverage/
+*.cover
+coverage.out
+
+# Temporary
+tmp/
+temp/
+*.tmp

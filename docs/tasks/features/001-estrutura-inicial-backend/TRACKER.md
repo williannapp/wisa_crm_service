@@ -10,12 +10,12 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Estrutura de diretórios do backend | 0/1 | Pendente |
-| Fase 2 | Importar bibliotecas necessárias | 0/1 | Pendente |
-| Fase 3 | Adicionar .gitignore | 0/1 | Pendente |
-| Fase 4 | Configuração de variáveis de ambiente | 0/1 | Pendente |
-| Fase 5 | Criar Dockerfile | 0/1 | Pendente |
-| Fase 6 | Endpoint health | 0/1 | Pendente |
+| Fase 1 | Estrutura de diretórios do backend | 1/1 | Concluída |
+| Fase 2 | Importar bibliotecas necessárias | 1/1 | Concluída |
+| Fase 3 | Adicionar .gitignore | 1/1 | Concluída |
+| Fase 4 | Configuração de variáveis de ambiente | 1/1 | Concluída |
+| Fase 5 | Criar Dockerfile | 1/1 | Concluída |
+| Fase 6 | Endpoint health | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -28,9 +28,9 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar estrutura de diretórios do backend em `backend/` conforme Clean Architecture e guidelines
-- [ ] Fase 2 — Inicializar go.mod e importar bibliotecas (Gin como framework HTTP padrão, godotenv)
-- [ ] Fase 3 — Adicionar .gitignore na raiz e em backend/ para evitar commits desnecessários
-- [ ] Fase 4 — Configurar suporte a variáveis de ambiente (.env e .env.example)
-- [ ] Fase 5 — Criar Dockerfile multi-stage para build e execução do backend
-- [ ] Fase 6 — Implementar endpoint GET /health para validação de disponibilidade da aplicação
+- [x] Fase 1 — Criar estrutura de diretórios do backend em `backend/` conforme Clean Architecture e guidelines
+- [x] Fase 2 — Inicializar go.mod e importar bibliotecas (Gin como framework HTTP padrão, godotenv)
+- [x] Fase 3 — Adicionar .gitignore na raiz e em backend/ para evitar commits desnecessários
+- [x] Fase 4 — Configurar suporte a variáveis de ambiente (.env e .env.example)
+- [x] Fase 5 — Criar Dockerfile multi-stage para build e execução do backend
+- [x] Fase 6 — Implementar endpoint GET /health para validação de disponibilidade da aplicação
