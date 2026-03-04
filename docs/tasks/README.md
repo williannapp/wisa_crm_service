@@ -121,4 +121,4 @@ Adicione o fix em `docs/tasks/TRACKER.md` na tabela "Status Geral".
 
 - [TRACKER.md](./TRACKER.md) — Tracker central do projeto
 - `docs/context.md` — (Opcional) Contexto e objetivos do projeto
-- `docs/adr/` — (Opcional) Decisões arquiteturais
+- `docs/adrs/` — (Opcional) Decisões arquiteturais
