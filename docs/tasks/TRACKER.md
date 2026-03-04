@@ -15,7 +15,8 @@ docs/tasks/
 ├── README.md               ← Guia para criar novas features/fixes
 ├── features/               ← Features em desenvolvimento
 │   ├── 001-estrutura-inicial-backend/
-│   └── 002-configuracao-banco-dados/
+│   ├── 002-configuracao-banco-dados/
+│   └── 003-estrutura-tabelas-banco-dados/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -37,6 +38,7 @@ docs/tasks/
 |-------------|-----------|-----------|--------|
 | [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 6/6 | Concluída |
 | [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
+| [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa-labs-db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 0/6 | Pendente |
 
 ---
 
@@ -84,6 +86,14 @@ docs/tasks/
 - **Features/fixes concluídos:** 002-configuracao-banco-dados
 - **Tasks concluídas:** 5/5 fases
 - **Próximas atividades:** Implementar próxima feature conforme TRACKER
+
+### Sessão 5 — 2026-03-04
+- **Atividades realizadas:**
+  - Planejamento da Feature 003 — Estrutura de tabelas do banco de dados
+  - Criação de documentos de planejamento para as 6 fases (schema, tabelas, índices, RLS, triggers)
+- **Features/fixes criados:** 003-estrutura-tabelas-banco-dados (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-schema-e-enums.md](features/003-estrutura-tabelas-banco-dados/fase-1-schema-e-enums.md)
 
 ---
 

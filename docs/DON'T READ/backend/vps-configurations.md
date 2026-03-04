@@ -88,6 +88,55 @@ Conforme [ADR-003](../adrs/ADR-003-postgresql-como-banco-de-dados.md), em ambien
 
 ---
 
+## 5. Manutenção: partições do audit_logs
+
+> **Lembrete operacional:** A tabela `audit_logs` usa particionamento por `created_at`. A partição inicial (conforme [fase-5-tabelas-refresh-tokens-audit-logs](../../tasks/features/003-estrutura-tabelas-banco-dados/fase-5-tabelas-refresh-tokens-audit-logs.md)) cobre o range **1970-01-01 até 2030-01-01**.
+>
+> **Antes de 2030**, criar novas partições para cobrir os períodos futuros. Caso contrário, INSERTs com `created_at` após o fim do range da última partição falharão.
+>
+> **Ação recomendada:** Agendar (cron/job) a criação de novas partições mensais ou anuais conforme política de retenção (ADR-003 sugere manter 12 meses de dados ativos). Ver a task fase-5 para detalhes do modelo de particionamento.
+
+### Como criar uma nova partição
+
+Conectar ao banco e executar (ajustar datas e nome da partição conforme o período desejado):
+
+```bash
+sudo -u postgres psql -d wisa_crm_db -c "
+CREATE TABLE wisa_crm_db.audit_logs_2030 PARTITION OF wisa_crm_db.audit_logs
+FOR VALUES FROM ('2030-01-01') TO ('2031-01-01');
+"
+```
+
+**Exemplo — partição anual** (para ano 2030):
+
+```sql
+CREATE TABLE wisa_crm_db.audit_logs_2030 PARTITION OF wisa_crm_db.audit_logs
+FOR VALUES FROM ('2030-01-01') TO ('2031-01-01');
+```
+
+**Exemplo — partição mensal** (para janeiro de 2030):
+
+```sql
+CREATE TABLE wisa_crm_db.audit_logs_2030_01 PARTITION OF wisa_crm_db.audit_logs
+FOR VALUES FROM ('2030-01-01') TO ('2030-02-01');
+```
+
+**Regras:**
+- Os ranges devem ser **contíguos e não sobrepostos** — o `TO` de uma partição é o `FROM` da próxima.
+- Usar `TIMESTAMPTZ` no `created_at` implica datas em UTC; ajustar limites se usar timezone local.
+- Partições antigas podem ser removidas com `DROP TABLE wisa_crm_db.audit_logs_YYYY;` após arquivamento (se aplicável).
+
+**Verificar partições existentes:**
+
+```sql
+SELECT inhrelid::regclass AS partition_name
+FROM pg_inherits
+WHERE inhparent = 'wisa_crm_db.audit_logs'::regclass
+ORDER BY partition_name;
+```
+
+---
+
 ## Referências
 
 - [ADR-003 — PostgreSQL como Banco de Dados](../adrs/ADR-003-postgresql-como-banco-de-dados.md)

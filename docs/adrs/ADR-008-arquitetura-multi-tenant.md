@@ -215,7 +215,8 @@ CREATE TABLE refresh_tokens (
     token_hash  CHAR(64) NOT NULL UNIQUE,                       -- hash SHA-256 do token
     expires_at  TIMESTAMPTZ NOT NULL,                           -- data de expiração
     revoked_at  TIMESTAMPTZ,                                    -- data de revogação (se houver)
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),              -- data de criação
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data de criação
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data da última atualização
     ip_address  INET,                                           -- IP do cliente
     user_agent  TEXT                                            -- user-agent do navegador
 );
@@ -229,7 +230,8 @@ CREATE TABLE audit_logs (
     ip_address  INET,                                           -- IP do cliente
     user_agent  TEXT,                                           -- user-agent do navegador
     metadata    JSONB,                                          -- dados adicionais do evento
-    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()              -- data do evento
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),             -- data do evento
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()              -- data da última atualização (emendas/correções, quando aplicável)
 ) PARTITION BY RANGE (created_at);
 
 -- Índices para performance multi-tenant e consultas frequentes
@@ -276,6 +278,10 @@ CREATE TRIGGER tr_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 CREATE TRIGGER tr_user_product_access_updated_at BEFORE UPDATE ON user_product_access
     FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_refresh_tokens_updated_at BEFORE UPDATE ON refresh_tokens
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE TRIGGER tr_audit_logs_updated_at BEFORE UPDATE ON audit_logs
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 ```
 
 **Diagrama de relacionamentos (resumo):**
@@ -299,6 +305,7 @@ tenants (1) ──< (N) subscriptions >── (N) products
 | **ENUMs** | Tipos nativos PostgreSQL para status e perfis — integridade e performance |
 | **Comentários** | Descrição em português em cada campo via comentários SQL |
 | **Índices** | Cobertura das queries esperadas: login, validação de assinatura, listagem por tenant |
+| **updated_at** | Coluna `updated_at` em refresh_tokens (revogação) e audit_logs (emendas/correções); trigger set_updated_at em todas as tabelas com essa coluna |
 
 ### 6. Hierarquia de isolamento (defense in depth)
 
