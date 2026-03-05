@@ -2,6 +2,7 @@
 
 **Status:** Aceito  
 **Data:** 2026-03-01  
+**Alterado em:** 2025-03-05 (entrega do Access Token via code temporário + Redis — ver [ATA-2025-03-05](../DON'T%20READ/ideas-new-features/ATA-2025-03-05-redirect-seguro-e-passagem-jwt.md))  
 **Autores:** Equipe de Arquitetura  
 **Componente:** wisa-crm-service (fluxo de autenticação end-to-end)
 
@@ -26,14 +27,19 @@ Isso cria desafios específicos que precisam ser explicitamente endereçados:
 
 ## Decisão
 
-**O fluxo de autenticação adotará o padrão de Authorization Code Flow simplificado** (inspirado em OAuth 2.0, mas sem o overhead de um servidor OAuth completo), com:
+**O fluxo de autenticação adotará o padrão de Authorization Code Flow** (OAuth 2.0), com:
 
-- Redirect-based login via parâmetro `redirect_uri`
-- Tokens entregues via **cookie HTTP-only + Secure + SameSite=Strict**
-- Refresh Token rotativo com validade de 7 dias
-- Access Token de 15 minutos
+- **Redirect seguro:** Backend monta internamente a `redirect_url` a partir de `tenant_slug` e `product_slug` — nenhuma URL externa é confiada (evita Open Redirect)
+- **Code temporário:** Após login, backend gera um code opaco, armazena no **Redis** (TTL ~2 min), retorna `redirect_url` com `?code=...&state=...`
+- **Troca code por token:** Cliente chama `POST /api/v1/auth/token` com `{"code": "..."}` no body; backend retorna `{"token": "JWT..."}` e invalida o code (uso único)
+- Access Token de 15 minutos; Refresh Token rotativo com validade de 7 dias
+- **Token nunca na URL** — apenas o code (opaco, descartável) aparece na query
 - Proteção por rate limiting + account lockout progressivo
 - Logout global via revogação do refresh token
+
+**Infraestrutura:** Requer Redis para armazenamento dos authorization codes.
+
+**Escopo:** Funciona para qualquer domínio — clientes em `*.wisa.labs.com.br` ou com domínio próprio.
 
 ---
 
@@ -42,100 +48,102 @@ Isso cria desafios específicos que precisam ser explicitamente endereçados:
 ### 1. Fluxo completo de autenticação (passo a passo)
 
 ```
-┌─────────┐     ┌───────────────────┐     ┌─────────────────────────────┐
-│ Usuário │     │ Sistema do Cliente│     │   wisa-crm-service (IdP)    │
-└────┬────┘     └────────┬──────────┘     └──────────────┬──────────────┘
-     │                   │                               │
-     │ GET /dashboard     │                               │
-     ├──────────────────▶│                               │
-     │                   │ JWT ausente ou expirado        │
-     │                   │ HTTP 302 Redirect              │
-     │◀──────────────────│ Location: https://auth.wisa-crm.com/login
-     │                   │ ?redirect_uri=https://cliente1.seusistema.com/auth/callback
-     │                   │ &tenant_slug=cliente1          │
-     │                   │ &state=<random_state_token>    │
-     │ GET /login?...    │                               │
-     ├───────────────────┼──────────────────────────────▶│
-     │                   │                               │ Exibe tela de login
-     │ Preenche email+senha                              │
-     ├───────────────────┼──────────────────────────────▶│
-     │                   │                               │ 1. Valida tenant_slug
-     │                   │                               │ 2. Valida credenciais
-     │                   │                               │ 3. Valida assinatura
-     │                   │                               │ 4. Gera access_token + refresh_token
-     │                   │                               │ 5. Valida redirect_uri (whitelist)
-     │                   │                               │ 6. HTTP 302 Redirect para redirect_uri
-     │                   │                               │    + Set-Cookie: refresh_token (HTTP-only)
-     │                   │                               │    + access_token no redirect hash ou query
-     │                   │◀──────────────────────────────│ HTTP 302
-     │                   │                               │
-     │ GET /auth/callback│                               │
-     ├──────────────────▶│                               │
-     │                   │ Extrai access_token           │
-     │                   │ Valida JWT (sig, iss, aud, exp)│
-     │                   │ Armazena em memória (não localStorage)
-     │ Acesso liberado   │                               │
-     │◀──────────────────│                               │
+┌─────────┐     ┌───────────────────┐     ┌─────────────────────────────────┐
+│ Usuário │     │ Sistema do Cliente│     │   wisa-crm-service (IdP)          │
+└────┬────┘     └────────┬──────────┘     └──────────────────┬────────────────┘
+     │                   │                                  │
+     │ GET /dashboard     │                                  │
+     ├──────────────────▶│                                  │
+     │                   │ JWT ausente ou expirado           │
+     │                   │ HTTP 302 Redirect                 │
+     │◀──────────────────│ Location: https://auth.wisa.labs.com.br/login
+     │                   │ ?tenant_slug=cliente1              │
+     │                   │ &product_slug=gestao-pocket        │
+     │                   │ &state=<random_state_token>       │
+     │ GET /login?...     │                                  │
+     ├───────────────────┼─────────────────────────────────▶│
+     │                   │                                  │ Exibe tela de login
+     │ Preenche email+senha                                 │
+     ├───────────────────┼─────────────────────────────────▶│
+     │                   │                                  │ 1. Valida tenant_slug
+     │                   │                                  │ 2. Valida credenciais
+     │                   │                                  │ 3. Valida assinatura
+     │                   │                                  │ 4. Gera JWT + code temporário
+     │                   │                                  │ 5. Armazena code no Redis (TTL ~2min)
+     │                   │                                  │ 6. Monta redirect_url com ?code=&state=
+     │                   │                                  │ 7. Resposta JSON: { redirect_url }
+     │                   │◀─────────────────────────────────│
+     │                   │                                  │
+     │ Frontend auth: window.location = redirect_url         │
+     │ GET https://cliente1.wisa.labs.com.br/gestao-pocket?code=abc&state=...
+     ├──────────────────▶│                                  │
+     │                   │ Extrai code da URL                │
+     │                   │ POST /api/v1/auth/token           │
+     │                   │ Body: { "code": "abc" }            │
+     │                   ├─────────────────────────────────▶│
+     │                   │                                  │ 8. Busca code no Redis
+     │                   │                                  │ 9. Retorna { "token": "JWT..." }
+     │                   │                                  │ 10. Remove code (uso único)
+     │                   │◀─────────────────────────────────│
+     │                   │ Armazena token em memória         │
+     │                   │ Valida JWT (sig, iss, aud, exp)   │
+     │ Acesso liberado   │                                  │
+     │◀──────────────────│                                  │
 ```
 
-### 2. Segurança do redirect_uri
+### 2. Segurança do redirect (evita Open Redirect)
 
-O parâmetro `redirect_uri` é um vetor de ataque clássico em OAuth (Open Redirect). A proteção:
+O backend **monta a `redirect_url` internamente** a partir de `tenant_slug` e `product_slug` validados. Nenhuma URL externa é confiada como parâmetro de entrada:
 
-- **Whitelist estrita por tenant:** cada tenant cadastra previamente a lista de `redirect_uri` permitidas
-- O `wisa-crm-service` **recusa qualquer `redirect_uri` não cadastrada** para o tenant:
+- **Montagem interna:** A URL é construída com base em regra fixa ou whitelist por tenant:
+  ```go
+  // Exemplo: https://{tenant_slug}.wisa.labs.com.br/{product_slug}
+  redirectURL := fmt.Sprintf("https://%s.wisa.labs.com.br/%s", tenantSlug, productSlug)
+  ```
+- **Alternativa:** Whitelist de `redirect_uri` por tenant no banco — a combinação `tenant_slug` + `product_slug` deve gerar uma URL permitida para aquele tenant
+- **Resposta do login:** O backend retorna `{"redirect_url": "..."}` em JSON; o frontend do auth apenas executa `window.location.href = response.redirect_url`
+- O parâmetro `state` é um token aleatório gerado pelo sistema cliente; o backend deve incluí-lo na `redirect_url` (ex: `?state=...`) para o cliente validar no retorno e prevenir CSRF
 
-```go
-// No Use Case de autenticação
-func (uc *AuthenticateUserUseCase) validateRedirectURI(tenantID uuid.UUID, redirectURI string) error {
-    allowed, err := uc.tenantRepo.GetAllowedRedirectURIs(ctx, tenantID)
-    if err != nil {
-        return err
-    }
-    for _, uri := range allowed {
-        if uri == redirectURI {
-            return nil
-        }
-    }
-    return domain.ErrInvalidRedirectURI
-}
+### 3. Entrega do token via Authorization Code (Redis)
+
+**Resposta do login:** O backend retorna `{"redirect_url": "https://...?code=abc&state=xyz"}`. O token JWT **nunca** aparece na URL.
+
+**Armazenamento do code no Redis:**
+- Chave: `auth_code:{code}` — código opaco (ex: 32 bytes em hex)
+- Valor: JSON com token(s) ou referência para emissão
+- TTL: 120 segundos
+- Uso único: removido imediatamente após troca por token
+
+**Endpoint `POST /api/v1/auth/token`:**
+```json
+// Request
+{ "code": "abc123xyz" }
+
+// Response 200
+{ "token": "eyJhbGciOiJSUzI1NiIs...", "refresh_token": "..." }
 ```
 
-- O parâmetro `state` é um token aleatório gerado pelo sistema cliente que deve ser validado no callback para prevenir CSRF no fluxo de autenticação
+O endpoint busca o code no Redis, retorna o access token (e opcionalmente refresh token), e **remove** o code (uso único).
 
-### 3. Entrega do token e armazenamento
+**Armazenamento no cliente:** O cliente armazena o access token **apenas em memória** (variável de serviço) — nunca localStorage nem sessionStorage. O refresh token pode ser retornado junto na troca e armazenado da mesma forma.
 
-**Access Token:** entregue como parâmetro de query no redirect de callback (`?access_token=...`), capturado pelo Angular **apenas em memória** (variável de serviço) — nunca em localStorage nem sessionStorage.
-
-**Refresh Token:** entregue via **Set-Cookie HTTP-only + Secure + SameSite=Strict**:
-```
-Set-Cookie: refresh_token=<value>; HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth/refresh; Max-Age=604800
-```
-
-**Por que esta separação?**
-- O access token em memória desaparece ao fechar a aba — comportamento seguro
-- O refresh token em cookie HTTP-only é invisível ao JavaScript — imune a XSS
-- `SameSite=Strict` protege o refresh token contra CSRF
-- `Path=/api/v1/auth/refresh` garante que o cookie só seja enviado para o endpoint de renovação
-
-**Trade-off documentado:** o access token em memória é perdido ao recarregar a página. O Angular detecta a ausência do token e usa o refresh token (cookie) para obter novo access token automaticamente — transparente para o usuário.
+**Validação obrigatória:** Aplicação cliente valida JWT (sig, iss, aud, exp) antes de conceder acesso.
 
 ### 4. Fluxo de renovação de sessão (Refresh Token Rotation)
 
-A renovação usa **Refresh Token Rotation**: a cada renovação, um novo refresh token é emitido e o antigo é imediatamente revogado. Isso detecta roubo de refresh tokens:
+A renovação usa **Refresh Token Rotation**: a cada renovação, um novo refresh token é emitido e o antigo é imediatamente revogado. O refresh token é obtido na troca do code (`/api/v1/auth/token`) e armazenado em memória pelo cliente.
 
 ```
 1. Access token expira (15 min)
-2. Angular detecta 401 e chama POST /api/v1/auth/refresh
-   (refresh_token enviado automaticamente via cookie)
+2. Cliente recebe 401; chama POST /api/v1/auth/refresh com body: { "refresh_token": "..." }
 3. wisa-crm-service:
    a. Valida refresh token no banco (não revogado, não expirado)
    b. Verifica assinatura do tenant (se vencida → 402, não renova)
    c. Revoga o refresh token atual no banco
    d. Emite novo access token (JWT 15 min)
    e. Emite novo refresh token (7 dias)
-   f. Retorna novo access token + Set-Cookie com novo refresh token
-4. Angular atualiza o access token em memória
+   f. Retorna 200 + { "token": "...", "refresh_token": "..." }
+4. Cliente atualiza tokens em memória; pode retentar a requisição original
 ```
 
 **Detecção de roubo de refresh token:**
@@ -211,17 +219,18 @@ func (uc *AuthenticateUserUseCase) Execute(ctx context.Context, input AuthInput)
 ### 6. Logout e invalidação de sessão
 
 **Logout local (apenas na aba atual):**
-- Angular limpa o access token da memória
-- Redireciona para tela de login
+- Cliente limpa access token e refresh token da memória
+- Redireciona para tela de login (ou auth central)
+- Opcional: chamar `POST /api/v1/auth/logout` com `refresh_token` no body para revogar a sessão atual
 
 **Logout global (invalida todas as sessões):**
 ```
 POST /api/v1/auth/logout
-Cookie: refresh_token=<value>
+Body: { "refresh_token": "..." }
 
 → wisa-crm-service revoga TODOS os refresh tokens do usuário no tenant
-→ Limpa cookie: Set-Cookie: refresh_token=; Max-Age=0; ...
 → Registra evento no audit_log
+→ Retorna 200
 ```
 
 Após logout global, todos os access tokens existentes expirarão naturalmente em até 15 minutos. Se necessário bloqueio imediato (ex: conta comprometida), o `jti` pode ser adicionado ao denylist.
@@ -234,15 +243,18 @@ O parâmetro `state` no redirect de login é um token CSRF específico para o fl
 // Sistema cliente — antes de redirecionar para login
 const state = generateSecureRandomToken(); // ex: 32 bytes hex
 sessionStorage.setItem('oauth_state', state);
-window.location = `https://auth.wisa-crm.com/login?redirect_uri=...&state=${state}`;
+window.location = `https://auth.wisa.labs.com.br/login?tenant_slug=cliente1&product_slug=gestao-pocket&state=${state}`;
 
-// Callback — validar state antes de processar o token
-const returnedState = new URLSearchParams(window.location.search).get('state');
+// Após redirect de volta — validar state e trocar code por token
+const params = new URLSearchParams(window.location.search);
+const returnedState = params.get('state');
+const code = params.get('code');
 const savedState = sessionStorage.getItem('oauth_state');
 if (returnedState !== savedState) {
-    // CSRF detectado — não processar o token
     throw new Error('State mismatch — potential CSRF attack');
 }
+// Trocar code por token: POST /api/v1/auth/token { "code": code }
+// Armazenar token em memória; opcional: history.replaceState para remover code da URL
 ```
 
 ---
@@ -250,18 +262,19 @@ if (returnedState !== savedState) {
 ## Consequências
 
 ### Positivas
-- Fluxo seguro de autenticação com múltiplas camadas de proteção
-- Refresh token em cookie HTTP-only imune a XSS
+- Fluxo seguro alinhado ao padrão OAuth 2.0 Authorization Code
+- Token JWT **nunca** exposto na URL — apenas code opaco e descartável
+- Funciona para **qualquer domínio** (subdomínios ou domínio próprio do cliente)
 - Bloqueio por inadimplência funcional em no máximo 15 minutos
 - Detecção de roubo de refresh token via rotation e reuse detection
 - Logout global efetivo via revogação de todos os tokens
 - Mensagem de erro genérica previne enumeração de usuários e tenants
 
 ### Negativas
-- Access token em memória é perdido ao recarregar página — requer lógica de renovação automática no Angular
-- Múltiplas abas do mesmo sistema cliente compartilham cookie mas precisam sincronizar access token (BroadcastChannel API ou shared worker)
-- Logout local não invalida o token imediatamente — janela de 15 minutos aceita como trade-off
-- Fluxo de redirect requer configuração prévia de `redirect_uri` por tenant
+- **Redis obrigatório** — nova dependência de infraestrutura
+- **Latência extra** — requisição adicional (troca code por token) no primeiro acesso
+- Token em memória é perdido ao recarregar página — requer lógica de renovação automática no cliente
+- Múltiplas abas do mesmo sistema cliente precisam sincronizar token (BroadcastChannel ou shared worker)
 
 ---
 
@@ -269,11 +282,13 @@ if (returnedState !== savedState) {
 
 | Risco | Probabilidade | Impacto | Severidade |
 |-------|--------------|---------|-----------|
-| Open Redirect via redirect_uri manipulada | Baixa | Alto | Alta |
-| Roubo de access token da memória via XSS | Baixa | Alto | Alta |
+| Open Redirect | Baixa | Alto | Alta |
+| Roubo de access token via XSS (token em memória) | Baixa | Alto | Alta |
 | Credential stuffing com lista de vazamentos | Alta | Médio | Alta |
 | Bypass de account lockout via diferentes IPs | Alta | Médio | Média |
-| Refresh token extraído de cookie via subdomain takeover | Muito Baixa | Crítico | Média |
+| Indisponibilidade do Redis | Média | Alto | Alta |
+| Code interceptado e trocado antes do cliente (janela ~2 min) | Baixa | Médio | Média |
+| Refresh token extraído da memória via XSS | Baixa | Alto | Alta |
 | Race condition no refresh token rotation | Baixa | Médio | Média |
 
 ---
@@ -281,9 +296,14 @@ if (returnedState !== savedState) {
 ## Mitigações
 
 ### Open Redirect
-- Whitelist estrita de redirect_uris por tenant (configuração no banco)
-- Validação por comparação exata (não por prefix matching)
-- Log e alerta para tentativas com redirect_uri não autorizada
+- Backend monta `redirect_url` internamente a partir de `tenant_slug` e `product_slug` — nenhuma URL externa confiada
+- Alternativa: whitelist estrita por tenant no banco
+- Log e alerta para tentativas com parâmetros suspeitos
+
+### Indisponibilidade do Redis
+- Configurar Redis com persistência e alta disponibilidade (ex: Redis Sentinel, cluster)
+- Monitoramento de saúde do Redis; fallback: falha de login com mensagem adequada
+- TTL curto no code reduz impacto de perda de dados no Redis
 
 ### Roubo de access token via XSS
 - CSP rigoroso no Angular (ADR-002) previne XSS
@@ -327,6 +347,7 @@ if (returnedState !== savedState) {
 
 ## Referências
 
+- [ATA-2025-03-05 — Redirect Seguro e Passagem de JWT](../DON'T READ/ideas-new-features/ATA-2025-03-05-redirect-seguro-e-passagem-jwt.md)
 - [OAuth 2.0 Security Best Current Practice (RFC 9700)](https://datatracker.ietf.org/doc/html/rfc9700)
 - [OAuth 2.0 for Browser-Based Apps (RFC 9449)](https://datatracker.ietf.org/doc/html/rfc9449)
 - [Refresh Token Rotation](https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation)

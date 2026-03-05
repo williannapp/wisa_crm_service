@@ -18,7 +18,9 @@ docs/tasks/
 │   ├── 002-configuracao-banco-dados/
 │   ├── 003-estrutura-tabelas-banco-dados/
 │   ├── 004-package-erro-padronizado/
-│   └── 005-endpoint-login/
+│   ├── 005-endpoint-login/
+│   ├── 006-jwt-cookie-redirect-url/
+│   └── 007-auth-code-flow-redis/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -43,6 +45,8 @@ docs/tasks/
 | [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa_crm_db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 6/6 | Concluída |
 | [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 3/3 | Concluída |
 | [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 6/6 | Concluída |
+| [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
+| [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 0/5 | Pendente |
 
 ---
 
@@ -152,6 +156,24 @@ docs/tasks/
 - **Features/fixes concluídos:** 005-endpoint-login
 - **Tasks concluídas:** 6/6 fases
 - **Próximas atividades:** Implementar próxima feature conforme TRACKER
+
+### Sessão 11 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 006 — JWT como Cookie e URL de Redirect
+  - Criação dos documentos de planejamento para as 3 fases (variável de ambiente, use case redirect_url, handler Set-Cookie)
+  - Baseado na ATA-2025-03-05 (redirect seguro e passagem JWT via cookie)
+- **Features/fixes criados:** 006-jwt-cookie-redirect-url (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-variavel-ambiente-dominio.md](features/006-jwt-cookie-redirect-url/fase-1-variavel-ambiente-dominio.md)
+
+### Sessão 12 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 007 — Authorization Code Flow com Redis
+  - Criação dos documentos de planejamento para as 5 fases: (1) Infraestrutura Redis, (2) AuthCodeStore no Redis, (3) Alteração do login para redirect 302, (4) Endpoint POST /auth/token, (5) Documentação de integração do cliente
+  - Baseado na ATA-2025-03-05 e especificação do usuário: code TTL 40s, redirect HTTP 302, resposta { access_token, expires_in }
+- **Features/fixes criados:** 007-auth-code-flow-redis (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-redis-infraestrutura.md](features/007-auth-code-flow-redis/fase-1-redis-infraestrutura.md)
 
 ---
 

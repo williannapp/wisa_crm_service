@@ -1,4 +1,4 @@
-# Feature: Blá, blá blá..
+# Feature: bla bla bla..
 
 ## Seu papel:
 
@@ -27,6 +27,7 @@ Você possui forte domínio de:
 - Ler o documento @docs/tasks/TRACKER.md, e entender como funciona o gerenciamento de implementações de novas features.
 - Ler os documentos de guidelines existentes em @docs/code_guidelines.
 - Ler os documentos de adrs existentes em @docs/adrs
+
 
 ## Entendido o que é este projeto, você deverá **pensar e planejar** detalhadamente a implementação dos seguintes items:
 
