@@ -17,7 +17,8 @@ docs/tasks/
 │   ├── 001-estrutura-inicial-backend/
 │   ├── 002-configuracao-banco-dados/
 │   ├── 003-estrutura-tabelas-banco-dados/
-│   └── 004-package-erro-padronizado/
+│   ├── 004-package-erro-padronizado/
+│   └── 005-endpoint-login/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -41,6 +42,7 @@ docs/tasks/
 | [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
 | [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa_crm_db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 6/6 | Concluída |
 | [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 3/3 | Concluída |
+| [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 0/6 | Pendente |
 
 ---
 
@@ -129,6 +131,14 @@ docs/tasks/
 - **Features/fixes concluídos:** 004-package-erro-padronizado
 - **Tasks concluídas:** 3/3 fases
 - **Próximas atividades:** Implementar próxima feature conforme TRACKER
+
+### Sessão 9 — 2026-03-04
+- **Atividades realizadas:**
+  - Planejamento da Feature 005 — Endpoint de Login
+  - Criação de documentos de planejamento para as 6 fases (entidades/repos, implementações GORM, serviços crypto, use case, handler, wiring)
+- **Features/fixes criados:** 005-endpoint-login (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-entidades-repositorios-models.md](features/005-endpoint-login/fase-1-entidades-repositorios-models.md)
 
 ---
 
