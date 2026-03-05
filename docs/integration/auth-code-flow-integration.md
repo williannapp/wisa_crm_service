@@ -111,12 +111,16 @@ Content-Type: application/json
 ```json
 {
   "access_token": "eyJhbGciOiJSUzI1NiIs...",
-  "expires_in": 900
+  "expires_in": 900,
+  "refresh_token": "abc123...",
+  "refresh_expires_in": 604800
 }
 ```
 
 - `access_token`: JWT RS256, expira em 15 minutos (900 segundos)
-- `expires_in`: segundos até a expiração (usar para renovação futura via refresh token)
+- `expires_in`: segundos até a expiração do access token
+- `refresh_token`: token opaco para renovação de sessão (7 dias)
+- `refresh_expires_in`: segundos até a expiração do refresh token (604800 = 7 dias)
 
 ### Resposta 401 (code inválido ou expirado)
 
@@ -128,6 +132,70 @@ O auth **não diferencia** "não encontrado", "expirado" ou "já usado" — resp
   "message": "Código de autorização inválido ou expirado."
 }
 ```
+
+---
+
+## Fluxo de Renovação (Refresh Token)
+
+### Quando o Access Token Expira
+
+O access token tem validade de 15 minutos. Quando expira, requisições à API retornam 401.
+
+### Chamada ao Refresh
+
+```http
+POST {AUTH_SERVER_URL}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "<token recebido na troca de code>",
+  "tenant_slug": "cliente1",
+  "product_slug": "gestao-pocket"
+}
+```
+
+### Respostas do Refresh
+
+**200 OK**
+
+```json
+{
+  "access_token": "...",
+  "expires_in": 900,
+  "refresh_token": "...",
+  "refresh_expires_in": 604800
+}
+```
+
+**401 Unauthorized**
+
+Token inválido (expirado, revogado ou inexistente). Mensagem genérica. Redirecionar para login.
+
+**402 Payment Required**
+
+Assinatura do tenant vencida. Redirecionar para página de renovação de plano.
+
+### Fluxo no Interceptor
+
+1. Cliente faz requisição com `access_token` no header
+2. API retorna 401
+3. Cliente chama `POST /auth/refresh` com `refresh_token`, `tenant_slug`, `product_slug`
+4. Se 200: atualiza tokens em memória; retenta requisição original
+5. Se 401 ou 402: limpa tokens; redireciona para login
+
+### Rotação do Refresh Token
+
+O `refresh_token` retornado substitui o antigo; o antigo é invalidado. Sempre armazene apenas o refresh token mais recente.
+
+### Boas Práticas de Segurança
+
+- Sempre substituir o `refresh_token` antigo pelo novo retornado
+- Nunca armazenar refresh_token em localStorage (vulnerável a XSS)
+- Preferir cookie HttpOnly ou armazenamento server-side
+
+### Rate Limiting
+
+O endpoint `POST /auth/refresh` está sujeito a rate limiting por IP. Evite chamadas em excesso; em caso de 429, aguardar Retry-After antes de retentar.
 
 ---
 
@@ -157,7 +225,8 @@ Referência: [ADR-006 — JWT com Assinatura Assimétrica](../adrs/ADR-006-jwt-c
 
 | HTTP | Situação                          | Ação do Cliente                                                |
 |------|-----------------------------------|----------------------------------------------------------------|
-| 401  | Code inválido/expirado            | Redirecionar usuário para login novamente                      |
+| 401  | Code inválido/expirado; refresh token inválido | Redirecionar usuário para login novamente                      |
+| 402  | Assinatura vencida (no refresh)   | Redirecionar para renovação de plano                           |
 | 503  | Serviço temporariamente indisponível | Exibir "Serviço temporariamente indisponível. Tente novamente." |
 | 500  | Erro interno                      | Mensagem genérica; não expor detalhes                         |
 

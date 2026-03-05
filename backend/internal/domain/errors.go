@@ -18,6 +18,7 @@ var (
 	ErrSubscriptionCanceled  = errors.New("subscription canceled")
 	ErrAccountLocked         = errors.New("account locked")
 	ErrRateLimitExceeded     = errors.New("rate limit exceeded")
-	ErrCodeInvalidOrExpired  = errors.New("authorization code invalid or expired")
+	ErrCodeInvalidOrExpired       = errors.New("authorization code invalid or expired")
 	ErrAuthCodeStorageUnavailable = errors.New("authorization code storage unavailable")
+	ErrRefreshTokenInvalid        = errors.New("refresh token invalid")
 )

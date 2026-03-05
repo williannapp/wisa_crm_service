@@ -7,6 +7,7 @@ type AuthCodeData struct {
 	Subject           string // user_id (ULID)
 	Audience          string
 	TenantID          string
+	ProductID         string // product_id (UUID) — para criar refresh token escopado
 	UserAccessProfile string
 }
 

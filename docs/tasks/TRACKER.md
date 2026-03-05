@@ -48,7 +48,7 @@ docs/tasks/
 | [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 6/6 | Concluída |
 | [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
 | [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
-| [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 0/4 | Pendente |
+| [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
 
 ---
 
@@ -197,6 +197,17 @@ docs/tasks/
 - **Features/fixes criados:** 008-refresh-token-endpoint (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-migration-product-id-refresh-tokens.md](features/008-refresh-token-endpoint/fase-1-migration-product-id-refresh-tokens.md)
+
+### Sessão 15 — 2026-03-05
+- **Atividades realizadas:**
+  - Implementação completa da Feature 008 — Refresh Token Endpoint
+  - Fase 1: Migration 000008 — product_id em refresh_tokens, índice idx_refresh_tokens_lookup
+  - Fase 2: AuthCodeData.ProductID, RefreshToken entity/repository/generator, refresh no POST /auth/token
+  - Fase 3: RefreshTokenUseCase, POST /api/v1/auth/refresh, validação hash+tenant+product, rotação atômica, verificação assinatura
+  - Fase 4: Documentação em docs/integration e docs/backend
+- **Features/fixes concluídos:** 008-refresh-token-endpoint
+- **Tasks concluídas:** 4/4 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---
 

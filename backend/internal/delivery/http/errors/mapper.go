@@ -38,6 +38,8 @@ func MapToAppError(err error) *apperrors.AppError {
 		return apperrors.NewRateLimitExceeded()
 	case errors.Is(err, domain.ErrCodeInvalidOrExpired):
 		return apperrors.NewCodeInvalidOrExpired()
+	case errors.Is(err, domain.ErrRefreshTokenInvalid):
+		return apperrors.NewInvalidCredentials()
 	case errors.Is(err, domain.ErrAuthCodeStorageUnavailable):
 		return apperrors.NewServiceUnavailable()
 	case errors.Is(err, domain.ErrInvalidCredentials):

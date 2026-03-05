@@ -23,6 +23,7 @@ const (
 const (
 	HTTPBadRequest          = 400
 	HTTPUnauthorized        = 401
+	HTTPPaymentRequired     = 402
 	HTTPForbidden           = 403
 	HTTPNotFound            = 404
 	HTTPTooManyRequests     = 429
@@ -104,13 +105,14 @@ func NewSubscriptionCanceled() *AppError {
 	)
 }
 
-// NewSubscriptionExpired returns an AppError for expired subscription (403).
+// NewSubscriptionExpired returns an AppError for expired subscription (402).
+// Per ADR-006/ADR-010: 402 Payment Required — redirect user to plan renewal.
 func NewSubscriptionExpired() *AppError {
 	return NewAppError(
 		CodeSubscriptionExpired,
 		"Assinatura expirada.",
 		"",
-		HTTPForbidden,
+		HTTPPaymentRequired,
 	)
 }
 

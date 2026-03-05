@@ -111,12 +111,30 @@ func main() {
 				authCodeStore,
 				redirectBaseDomain,
 			)
-			exchangeCodeForToken := auth.NewExchangeCodeForTokenUseCase(authCodeStore, jwtSvc)
-			authHandler := handler.NewAuthHandler(authenticateUser, exchangeCodeForToken)
+			refreshTokenRepo := persistence.NewGormRefreshTokenRepository(db)
+			refreshTokenGen := crypto.NewRefreshTokenGenerator()
+			exchangeCodeForToken := auth.NewExchangeCodeForTokenUseCase(
+				authCodeStore,
+				jwtSvc,
+				refreshTokenRepo,
+				refreshTokenGen,
+			)
+			refreshTokenUseCase := auth.NewRefreshTokenUseCase(
+				tenantRepo,
+				productRepo,
+				subscriptionRepo,
+				userProductAccRepo,
+				refreshTokenRepo,
+				jwtSvc,
+				refreshTokenGen,
+				redirectBaseDomain,
+			)
+			authHandler := handler.NewAuthHandler(authenticateUser, exchangeCodeForToken, refreshTokenUseCase)
 
 			authGroup := router.Group("/api/v1/auth")
 			authGroup.POST("/login", authHandler.Login)
 			authGroup.POST("/token", authHandler.Token)
+			authGroup.POST("/refresh", authHandler.Refresh)
 		}
 	}
 

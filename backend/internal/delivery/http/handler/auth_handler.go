@@ -15,13 +15,19 @@ import (
 type AuthHandler struct {
 	authenticateUser     *auth.AuthenticateUserUseCase
 	exchangeCodeForToken *auth.ExchangeCodeForTokenUseCase
+	refreshToken         *auth.RefreshTokenUseCase
 }
 
 // NewAuthHandler creates a new AuthHandler.
-func NewAuthHandler(authenticateUser *auth.AuthenticateUserUseCase, exchangeCodeForToken *auth.ExchangeCodeForTokenUseCase) *AuthHandler {
+func NewAuthHandler(
+	authenticateUser *auth.AuthenticateUserUseCase,
+	exchangeCodeForToken *auth.ExchangeCodeForTokenUseCase,
+	refreshToken *auth.RefreshTokenUseCase,
+) *AuthHandler {
 	return &AuthHandler{
 		authenticateUser:     authenticateUser,
 		exchangeCodeForToken: exchangeCodeForToken,
+		refreshToken:         refreshToken,
 	}
 }
 
@@ -66,7 +72,35 @@ func (h *AuthHandler) Token(c *gin.Context) {
 	}
 
 	c.JSON(200, dto.TokenResponse{
-		AccessToken: out.AccessToken,
-		ExpiresIn:   out.ExpiresIn,
+		AccessToken:      out.AccessToken,
+		ExpiresIn:        out.ExpiresIn,
+		RefreshToken:     out.RefreshToken,
+		RefreshExpiresIn: out.RefreshExpiresIn,
+	})
+}
+
+// Refresh handles POST /api/v1/auth/refresh.
+func (h *AuthHandler) Refresh(c *gin.Context) {
+	var req dto.RefreshRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(apperrors.HTTPBadRequest, apperrors.NewInvalidRequest("Dados inválidos. Verifique refresh_token, product_slug e tenant_slug."))
+		return
+	}
+
+	out, err := h.refreshToken.Execute(c.Request.Context(), auth.RefreshTokenInput{
+		RefreshToken: req.RefreshToken,
+		ProductSlug:  req.ProductSlug,
+		TenantSlug:   req.TenantSlug,
+	})
+	if err != nil {
+		deliveryerrors.RespondWithError(c, err)
+		return
+	}
+
+	c.JSON(200, dto.TokenResponse{
+		AccessToken:      out.AccessToken,
+		ExpiresIn:        out.ExpiresIn,
+		RefreshToken:     out.RefreshToken,
+		RefreshExpiresIn: out.RefreshExpiresIn,
 	})
 }

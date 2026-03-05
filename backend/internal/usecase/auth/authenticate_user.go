@@ -148,6 +148,7 @@ func (uc *AuthenticateUserUseCase) Execute(ctx context.Context, input LoginInput
 		Subject:           user.ID.String(),
 		Audience:          aud,
 		TenantID:          tenant.ID.String(),
+		ProductID:         product.ID.String(),
 		UserAccessProfile: accessProfile,
 	}
 	if err := uc.authCodeStore.Store(ctx, code, data, authCodeTTLSeconds); err != nil {

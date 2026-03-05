@@ -64,7 +64,8 @@ O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retorna
 ### Endpoints
 
 - **POST /api/v1/auth/login** — Autentica usuário e responde HTTP 302 redirect para callback do cliente com `?code=...&state=...`
-- **POST /api/v1/auth/token** — Troca o authorization code por JWT (retorna `access_token` e `expires_in`)
+- **POST /api/v1/auth/token** — Troca o authorization code por JWT (retorna `access_token`, `expires_in`, `refresh_token`, `refresh_expires_in`)
+- **POST /api/v1/auth/refresh** — Renova sessão com refresh token (retorna novo par access + refresh)
 
 ### Pré-requisitos
 
@@ -104,9 +105,23 @@ O code expira em **40 segundos** e é de uso único.
 ```json
 {
   "access_token": "eyJhbGciOiJSUzI1NiIs...",
-  "expires_in": 900
+  "expires_in": 900,
+  "refresh_token": "abc123...",
+  "refresh_expires_in": 604800
 }
 ```
+
+### POST /api/v1/auth/refresh — Request
+
+```json
+{
+  "refresh_token": "token_recebido_na_troca_de_code",
+  "tenant_slug": "cliente1",
+  "product_slug": "crm"
+}
+```
+
+Resposta igual à do `/auth/token`. O refresh token antigo é invalidado (rotação).
 
 ### Teste manual (curl)
 

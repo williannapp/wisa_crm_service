@@ -10,10 +10,10 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Migration: Adicionar product_id à tabela refresh_tokens | 0/1 | Pendente |
-| Fase 2 | Refresh Token no fluxo de troca de code (POST /auth/token) | 0/1 | Pendente |
-| Fase 3 | Endpoint POST /api/v1/auth/refresh | 0/1 | Pendente |
-| Fase 4 | Documentação de integração para clientes | 0/1 | Pendente |
+| Fase 1 | Migration: Adicionar product_id à tabela refresh_tokens | 1/1 | Concluída |
+| Fase 2 | Refresh Token no fluxo de troca de code (POST /auth/token) | 1/1 | Concluída |
+| Fase 3 | Endpoint POST /api/v1/auth/refresh | 1/1 | Concluída |
+| Fase 4 | Documentação de integração para clientes | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -24,10 +24,10 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Migration 000008: adicionar product_id e índice composto em refresh_tokens
-- [ ] Fase 2 — Estender AuthCodeData com ProductID; gerar e persistir refresh token no POST /auth/token; retornar refresh_token e refresh_expires_in
-- [ ] Fase 3 — Implementar endpoint POST /api/v1/auth/refresh; validação por hash + tenant_slug + product_slug; rotação atômica; verificação de assinatura
-- [ ] Fase 4 — Documentar fluxo de refresh para aplicações clientes em docs/integration
+- [x] Fase 1 — Migration 000008: adicionar product_id e índice composto em refresh_tokens
+- [x] Fase 2 — Estender AuthCodeData com ProductID; gerar e persistir refresh token no POST /auth/token; retornar refresh_token e refresh_expires_in
+- [x] Fase 3 — Implementar endpoint POST /api/v1/auth/refresh; validação por hash + tenant_slug + product_slug; rotação atômica; verificação de assinatura
+- [x] Fase 4 — Documentar fluxo de refresh para aplicações clientes em docs/integration
 
 ## Dependências entre Fases
 
