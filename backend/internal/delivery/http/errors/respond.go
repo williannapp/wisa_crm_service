@@ -2,8 +2,6 @@ package errors
 
 import (
 	"github.com/gin-gonic/gin"
-
-	apperrors "wisa-crm-service/backend/pkg/errors"
 )
 
 // RespondWithError maps the given error to AppError and sends a standardized

@@ -3,12 +3,15 @@ package errors
 // Error codes (SCREAMING_SNAKE_CASE) for standardized API responses.
 // Used for programmatic identification and logs.
 const (
-	CodeInvalidCredentials   = "INVALID_CREDENTIALS"
-	CodeAccountLocked        = "ACCOUNT_LOCKED"
+	CodeInvalidCredentials    = "INVALID_CREDENTIALS"
+	CodeAccountLocked         = "ACCOUNT_LOCKED"
+	CodeUserBlocked           = "USER_BLOCKED"
+	CodeProductUnavailable    = "PRODUCT_UNAVAILABLE"
+	CodeInvalidRequest        = "INVALID_REQUEST"
 	CodeSubscriptionSuspended = "SUBSCRIPTION_SUSPENDED"
-	CodeSubscriptionCanceled = "SUBSCRIPTION_CANCELED"
-	CodeTenantNotFound       = "TENANT_NOT_FOUND"
-	CodeUserNotFound         = "USER_NOT_FOUND"
+	CodeSubscriptionCanceled  = "SUBSCRIPTION_CANCELED"
+	CodeTenantNotFound        = "TENANT_NOT_FOUND"
+	CodeUserNotFound          = "USER_NOT_FOUND"
 	CodeRateLimitExceeded     = "RATE_LIMIT_EXCEEDED"
 	CodeSubscriptionExpired   = "SUBSCRIPTION_EXPIRED"
 	CodeInternalError         = "INTERNAL_ERROR"
@@ -45,12 +48,45 @@ func NewAccountLocked() *AppError {
 	)
 }
 
+// NewUserBlocked returns an AppError for blocked user (403).
+func NewUserBlocked() *AppError {
+	return NewAppError(
+		CodeUserBlocked,
+		"Usuário sem permissão para acessar o sistema.",
+		"",
+		HTTPForbidden,
+	)
+}
+
+// NewProductUnavailable returns an AppError for unavailable product (403).
+func NewProductUnavailable() *AppError {
+	return NewAppError(
+		CodeProductUnavailable,
+		"Produto indisponível para acesso.",
+		"",
+		HTTPForbidden,
+	)
+}
+
+// NewInvalidRequest returns an AppError for invalid request/validation (400).
+func NewInvalidRequest(message string) *AppError {
+	if message == "" {
+		message = "Dados inválidos. Verifique os campos enviados."
+	}
+	return NewAppError(
+		CodeInvalidRequest,
+		message,
+		"",
+		HTTPBadRequest,
+	)
+}
+
 // NewSubscriptionSuspended returns an AppError for suspended subscription (403).
 func NewSubscriptionSuspended() *AppError {
 	return NewAppError(
 		CodeSubscriptionSuspended,
 		"Acesso suspenso por pendência financeira.",
-		"",
+		"Sua assinatura não está ativa devido a pagamentos em aberto. Por favor, atualize sua forma de pagamento para acessar o software.",
 		HTTPForbidden,
 	)
 }
@@ -60,7 +96,7 @@ func NewSubscriptionCanceled() *AppError {
 	return NewAppError(
 		CodeSubscriptionCanceled,
 		"Assinatura cancelada.",
-		"",
+		"Sua assinatura foi cancelada. Entre em contato com a equipe Wisa Labs para analisar o caso.",
 		HTTPForbidden,
 	)
 }

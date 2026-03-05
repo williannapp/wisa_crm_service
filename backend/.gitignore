@@ -1,3 +1,9 @@
+# Keys (never commit)
+*.pem
+*.key
+private_key*
+private*.pem
+
 # Go — binários e artefatos
 wisa-crm-service
 wisa-crm-service.exe

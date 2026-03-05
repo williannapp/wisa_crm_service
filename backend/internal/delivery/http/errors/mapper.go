@@ -22,6 +22,12 @@ func MapToAppError(err error) *apperrors.AppError {
 	switch {
 	case errors.Is(err, domain.ErrAccountLocked):
 		return apperrors.NewAccountLocked()
+	case errors.Is(err, domain.ErrUserBlocked):
+		return apperrors.NewUserBlocked()
+	case errors.Is(err, domain.ErrProductUnavailable):
+		return apperrors.NewProductUnavailable()
+	case errors.Is(err, domain.ErrProductNotFound):
+		return apperrors.NewInvalidCredentials()
 	case errors.Is(err, domain.ErrSubscriptionSuspended):
 		return apperrors.NewSubscriptionSuspended()
 	case errors.Is(err, domain.ErrSubscriptionCanceled):

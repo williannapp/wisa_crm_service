@@ -42,7 +42,7 @@ docs/tasks/
 | [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
 | [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa_crm_db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 6/6 | Concluída |
 | [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 3/3 | Concluída |
-| [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 0/6 | Pendente |
+| [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 6/6 | Concluída |
 
 ---
 
@@ -139,6 +139,19 @@ docs/tasks/
 - **Features/fixes criados:** 005-endpoint-login (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-entidades-repositorios-models.md](features/005-endpoint-login/fase-1-entidades-repositorios-models.md)
+
+### Sessão 10 — 2026-03-04
+- **Atividades realizadas:**
+  - Implementação completa da Feature 005 — Endpoint de Login
+  - Fase 1: Entidades (Tenant, Product, User, Subscription, UserProductAccess), interfaces de repositório, models GORM, erros de domínio (ErrUserBlocked, ErrProductNotFound, ErrProductUnavailable)
+  - Fase 2: Repositórios GORM (Tenant, Product, User, Subscription, UserProductAccess)
+  - Fase 3: BcryptPasswordService e RSAJWTService (RS256, 15 min)
+  - Fase 4: Use Case AuthenticateUser com validações completas, timing constante (dummy hash), aud = slug + base domain
+  - Fase 5: AuthHandler, DTOs LoginRequest/LoginResponse, rota POST /api/v1/auth/login
+  - Fase 6: Wiring no main.go, variáveis JWT em .env.example, documentação em docs/backend/README.md
+- **Features/fixes concluídos:** 005-endpoint-login
+- **Tasks concluídas:** 6/6 fases
+- **Próximas atividades:** Implementar próxima feature conforme TRACKER
 
 ---
 

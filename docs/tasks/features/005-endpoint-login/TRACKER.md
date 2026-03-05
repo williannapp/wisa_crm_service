@@ -10,12 +10,12 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Entidades, interfaces de repositório e models de persistência | 0/1 | Pendente |
-| Fase 2 | Implementações dos repositórios GORM | 0/1 | Pendente |
-| Fase 3 | Serviços de infraestrutura (Password, JWT RS256) | 0/1 | Pendente |
-| Fase 4 | Use Case AuthenticateUser com validações completas | 0/1 | Pendente |
-| Fase 5 | Handler HTTP e rota POST /api/v1/auth/login | 0/1 | Pendente |
-| Fase 6 | Wiring no main.go e configurações (.env) | 0/1 | Pendente |
+| Fase 1 | Entidades, interfaces de repositório e models de persistência | 1/1 | Concluída |
+| Fase 2 | Implementações dos repositórios GORM | 1/1 | Concluída |
+| Fase 3 | Serviços de infraestrutura (Password, JWT RS256) | 1/1 | Concluída |
+| Fase 4 | Use Case AuthenticateUser com validações completas | 1/1 | Concluída |
+| Fase 5 | Handler HTTP e rota POST /api/v1/auth/login | 1/1 | Concluída |
+| Fase 6 | Wiring no main.go e configurações (.env) | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -28,12 +28,12 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar entidades de domínio, interfaces de repositório e models GORM (aud do JWT = slug + base domain, sem novo campo no banco)
-- [ ] Fase 2 — Implementar repositórios GORM (Tenant, Product, User, Subscription, UserProductAccess)
-- [ ] Fase 3 — Implementar PasswordService (bcrypt) e JWTService (RS256)
-- [ ] Fase 4 — Implementar Use Case AuthenticateUser com fluxo de validações (tenant, product, email, senha, status, assinatura) e emissão JWT
-- [ ] Fase 5 — Criar handler de login, DTOs, rota e integração com ErrorMapper
-- [ ] Fase 6 — Wiring de dependências no main.go e variáveis de ambiente
+- [x] Fase 1 — Criar entidades de domínio, interfaces de repositório e models GORM (aud do JWT = slug + base domain, sem novo campo no banco)
+- [x] Fase 2 — Implementar repositórios GORM (Tenant, Product, User, Subscription, UserProductAccess)
+- [x] Fase 3 — Implementar PasswordService (bcrypt) e JWTService (RS256)
+- [x] Fase 4 — Implementar Use Case AuthenticateUser com fluxo de validações (tenant, product, email, senha, status, assinatura) e emissão JWT
+- [x] Fase 5 — Criar handler de login, DTOs, rota e integração com ErrorMapper
+- [x] Fase 6 — Wiring de dependências no main.go e variáveis de ambiente
 
 ## Dependências entre Fases
 

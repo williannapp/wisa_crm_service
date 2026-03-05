@@ -26,7 +26,10 @@ services:
     environment:
       PORT: 8080
       APP_ENV: development
-      DATABASE_URL: postgres://wisa_crm:wisa_crm_secret@postgres:5432/wisa_crm_db?sslmode=disable
+      DATABASE_URL: postgres://wisa_crm:wisa_crm_secret@postgres:5432/wisa_crm_db?sslmode=disable&options=-c%20search_path=wisa_crm_db
+      JWT_PRIVATE_KEY_PATH: /app/private.pem
+    volumes:
+      - ./backend/private.pem:/app/private.pem:ro
     depends_on:
       postgres:
         condition: service_healthy
