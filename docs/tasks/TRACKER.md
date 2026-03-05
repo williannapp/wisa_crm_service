@@ -16,7 +16,8 @@ docs/tasks/
 ├── features/               ← Features em desenvolvimento
 │   ├── 001-estrutura-inicial-backend/
 │   ├── 002-configuracao-banco-dados/
-│   └── 003-estrutura-tabelas-banco-dados/
+│   ├── 003-estrutura-tabelas-banco-dados/
+│   └── 004-package-erro-padronizado/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -39,6 +40,7 @@ docs/tasks/
 | [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 6/6 | Concluída |
 | [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
 | [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa_crm_db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 6/6 | Concluída |
+| [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 0/3 | Pendente |
 
 ---
 
@@ -108,6 +110,14 @@ docs/tasks/
 - **Features/fixes concluídos:** 003-estrutura-tabelas-banco-dados
 - **Tasks concluídas:** 6/6 fases
 - **Próximas atividades:** Implementar próxima feature conforme TRACKER
+
+### Sessão 7 — 2026-03-04
+- **Atividades realizadas:**
+  - Planejamento da Feature 004 — Package de Erro Padronizado
+  - Criação de documentos de planejamento para as 3 fases (estrutura + AppError, catálogo + mapper, integração delivery)
+- **Features/fixes criados:** 004-package-erro-padronizado (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-diretorios-tipo-erro.md](features/004-package-erro-padronizado/fase-1-estrutura-diretorios-tipo-erro.md)
 
 ---
 
