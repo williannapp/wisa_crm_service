@@ -53,9 +53,12 @@ O sistema centralizador executa as seguintes verificações:
 | **Validação de assinatura** | Verifica se a assinatura está ativa e em dia |
 | **Validação de credenciais** | Valida usuário e senha |
 
-### 6. Emissão do JWT
+### 6. Emissão do JWT (Authorization Code Flow)
 
-Se **todas as validações forem aprovadas**, o sistema centralizador gera um **JWT válido** e o retorna para o sistema do cliente.
+Se **todas as validações forem aprovadas**, o sistema centralizador:
+- Gera um **authorization code** temporário (TTL 40s) e armazena no Redis;
+- Redireciona o usuário (HTTP 302) para o callback do sistema do cliente com `?code=...&state=...`;
+- O sistema do cliente troca o code por JWT via `POST /api/v1/auth/token`, obtendo o token sem expô-lo na URL.
 
 ### 7. Recepção e Validação pelo Cliente
 

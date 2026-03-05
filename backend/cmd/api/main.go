@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"wisa-crm-service/backend/internal/delivery/http/handler"
+	"wisa-crm-service/backend/internal/infrastructure/cache"
 	"wisa-crm-service/backend/internal/infrastructure/crypto"
 	"wisa-crm-service/backend/internal/infrastructure/http/middleware"
 	"wisa-crm-service/backend/internal/infrastructure/persistence"
@@ -67,6 +69,18 @@ func main() {
 			log.Fatal("JWT_PRIVATE_KEY_PATH is required in production")
 		}
 		if jwtPrivateKeyPath != "" {
+			redisURL := os.Getenv("REDIS_URL")
+			if redisURL == "" {
+				if appEnv == "production" {
+					log.Fatal("REDIS_URL is required in production")
+				}
+				redisURL = "redis://localhost:6379/0"
+			}
+			redisClient, err := cache.NewRedisClient(context.Background(), redisURL)
+			if err != nil {
+				log.Fatalf("Redis connection failed: %v", err)
+			}
+			defer redisClient.Close()
 			tenantRepo := persistence.NewGormTenantRepository(db)
 			productRepo := persistence.NewGormProductRepository(db)
 			userRepo := persistence.NewGormUserRepository(db)
@@ -84,6 +98,9 @@ func main() {
 				log.Fatalf("JWT service initialization failed: %v", err)
 			}
 
+			authCodeStore := cache.NewRedisAuthCodeStore(redisClient)
+			redirectBaseDomain := getEnv("JWT_AUD_BASE_DOMAIN", "app.wisa-crm.com")
+
 			authenticateUser := auth.NewAuthenticateUserUseCase(
 				tenantRepo,
 				productRepo,
@@ -91,13 +108,15 @@ func main() {
 				subscriptionRepo,
 				userProductAccRepo,
 				passwordSvc,
-				jwtSvc,
-				getEnv("JWT_AUD_BASE_DOMAIN", "app.wisa-crm.com"),
+				authCodeStore,
+				redirectBaseDomain,
 			)
-			authHandler := handler.NewAuthHandler(authenticateUser)
+			exchangeCodeForToken := auth.NewExchangeCodeForTokenUseCase(authCodeStore, jwtSvc)
+			authHandler := handler.NewAuthHandler(authenticateUser, exchangeCodeForToken)
 
 			authGroup := router.Group("/api/v1/auth")
 			authGroup.POST("/login", authHandler.Login)
+			authGroup.POST("/token", authHandler.Token)
 		}
 	}
 

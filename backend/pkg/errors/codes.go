@@ -15,6 +15,8 @@ const (
 	CodeRateLimitExceeded     = "RATE_LIMIT_EXCEEDED"
 	CodeSubscriptionExpired   = "SUBSCRIPTION_EXPIRED"
 	CodeInternalError         = "INTERNAL_ERROR"
+	CodeCodeInvalidOrExpired  = "CODE_INVALID_OR_EXPIRED"
+	CodeServiceUnavailable   = "SERVICE_UNAVAILABLE"
 )
 
 // HTTP status constants for error responses.
@@ -25,6 +27,7 @@ const (
 	HTTPNotFound            = 404
 	HTTPTooManyRequests     = 429
 	HTTPInternalServerError = 500
+	HTTPServiceUnavailable  = 503
 )
 
 // NewInvalidCredentials returns an AppError for invalid credentials (401).
@@ -149,5 +152,26 @@ func NewInternalError() *AppError {
 		"Erro interno. Tente novamente.",
 		"",
 		HTTPInternalServerError,
+	)
+}
+
+// NewCodeInvalidOrExpired returns an AppError for invalid/expired auth code (401).
+// Per ADR-010: do not differentiate "not found", "expired" or "already used".
+func NewCodeInvalidOrExpired() *AppError {
+	return NewAppError(
+		CodeCodeInvalidOrExpired,
+		"Código de autorização inválido ou expirado.",
+		"",
+		HTTPUnauthorized,
+	)
+}
+
+// NewServiceUnavailable returns an AppError for temporary service unavailability (503).
+func NewServiceUnavailable() *AppError {
+	return NewAppError(
+		CodeServiceUnavailable,
+		"Serviço temporariamente indisponível. Tente novamente.",
+		"",
+		HTTPServiceUnavailable,
 	)
 }

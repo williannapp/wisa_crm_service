@@ -7,11 +7,11 @@
 
 ## Desenvolvimento Local
 
-### Opção 1: Com Docker (PostgreSQL em container)
+### Opção 1: Com Docker (PostgreSQL e Redis em container)
 
-1. Subir o banco: `docker compose up postgres -d`
+1. Subir o banco e Redis: `docker compose up postgres redis -d`
 2. Copiar variáveis: `cp backend/.env.example backend/.env`
-3. Ajustar `DATABASE_URL` se necessário (padrão: `localhost:5432`)
+3. Ajustar `DATABASE_URL` e `REDIS_URL` se necessário (padrão: localhost)
 4. Rodar migrations: `make migrate-up`
 5. Na pasta backend: `go run ./cmd/api` ou `make run-backend` (a partir da raiz)
 
@@ -42,7 +42,8 @@ Ver `backend/.env.example`.
 | `JWT_ISSUER`             | Não                    | Claim `iss` do JWT (padrão: wisa-crm-service)             |
 | `JWT_EXPIRATION_MINUTES` | Não                    | Duração do token em minutos (padrão: 15)                |
 | `JWT_KEY_ID`             | Não                    | `kid` no header do JWT (padrão: key-2026-v1)             |
-| `JWT_AUD_BASE_DOMAIN`    | Não                    | Domínio base para `aud` (ex: app.wisa-crm.com)          |
+| `JWT_AUD_BASE_DOMAIN`    | Não                    | Domínio base para `aud` e redirect (ex: app.wisa-crm.com) |
+| `REDIS_URL`              | Sim (com auth)         | URL Redis para authorization codes (ex: redis://localhost:6379/0) |
 
 ## Migrações
 
@@ -56,24 +57,45 @@ O comando de migrate usa `DATABASE_URL` do ambiente. Carregue `backend/.env` ant
 
 - `GET /health` retorna `{"status":"ok"}` com HTTP 200.
 
-## Endpoint de Login
+## Fluxo de Autenticação (Authorization Code)
 
-- **POST /api/v1/auth/login** — Autentica usuário e retorna JWT RS256.
+O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retornado diretamente — o cliente recebe um code na URL de redirect e o troca pelo token via `POST /auth/token`.
+
+### Endpoints
+
+- **POST /api/v1/auth/login** — Autentica usuário e responde HTTP 302 redirect para callback do cliente com `?code=...&state=...`
+- **POST /api/v1/auth/token** — Troca o authorization code por JWT (retorna `access_token` e `expires_in`)
 
 ### Pré-requisitos
 
 - `DATABASE_URL` configurada
+- `REDIS_URL` configurada (ex: `redis://localhost:6379/0`)
 - `JWT_PRIVATE_KEY_PATH` apontando para arquivo `.pem` da chave privada RSA 4096 bits (gerar com: `openssl genrsa -out private.pem 4096`)
 - Dados de teste no banco: tenant, product, user (com senha bcrypt), subscription ativa, user_product_access
 
-### Request
+### POST /api/v1/auth/login — Request
 
 ```json
 {
   "slug": "cliente1",
   "product_slug": "crm",
   "user_email": "usuario@empresa.com",
-  "password": "senha123"
+  "password": "senha123",
+  "state": "token_csrf_gerado_pelo_cliente"
+}
+```
+
+### Resposta de sucesso (302)
+
+`Location: https://{tenant_slug}.{JWT_AUD_BASE_DOMAIN}/{product_slug}/callback?code={code}&state={state}`
+
+O code expira em **40 segundos** e é de uso único.
+
+### POST /api/v1/auth/token — Request
+
+```json
+{
+  "code": "code_recebido_na_url_do_callback"
 }
 ```
 
@@ -81,19 +103,32 @@ O comando de migrate usa `DATABASE_URL` do ambiente. Carregue `backend/.env` ant
 
 ```json
 {
-  "token": "eyJhbGciOiJSUzI1NiIs..."
+  "access_token": "eyJhbGciOiJSUzI1NiIs...",
+  "expires_in": 900
 }
 ```
 
 ### Teste manual (curl)
 
+Para testar o fluxo completo localmente (redirect não será seguido automaticamente):
+
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/login \
+# Login (com -L para seguir redirect; em dev, verá a URL de callback com code na resposta)
+curl -v -X POST http://localhost:8080/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"slug":"cliente1","product_slug":"crm","user_email":"usuario@empresa.com","password":"senha123"}'
+  -d '{"slug":"cliente1","product_slug":"crm","user_email":"usuario@empresa.com","password":"senha123","state":"xyz"}'
+
+# Trocar code por token (use o code retornado na Location do redirect)
+curl -X POST http://localhost:8080/api/v1/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"code":"<code_da_url>"}'
 ```
 
 O token pode ser decodificado em [jwt.io](https://jwt.io) para validar os claims (iss, sub, aud, tenant_id, user_access_profile, etc.).
+
+### Documentação de integração para clientes
+
+Ver [docs/integration/auth-code-flow-integration.md](../integration/auth-code-flow-integration.md).
 
 ## Como Testar na sua Máquina
 
@@ -181,6 +216,7 @@ O token pode ser decodificado em [jwt.io](https://jwt.io) para validar os claims
 
 - **Health:** `GET http://localhost:8080/health`
 - **Login:** `POST http://localhost:8080/api/v1/auth/login`
+- **Token:** `POST http://localhost:8080/api/v1/auth/token`
 
 ## Tratamento de Erros
 

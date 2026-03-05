@@ -3,6 +3,9 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
+	"net/url"
 
 	"wisa-crm-service/backend/internal/domain"
 	"wisa-crm-service/backend/internal/domain/repository"
@@ -13,29 +16,33 @@ import (
 // Per ADR-010: always run bcrypt.Compare to prevent user enumeration via timing.
 const dummyBcryptHash = "$2a$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
 
+const authCodeTTLSeconds = 40
+
 // LoginInput contains the login request data.
 type LoginInput struct {
 	Slug        string
 	ProductSlug string
 	UserEmail   string
 	Password    string
+	State       string // CSRF token for callback validation
 }
 
-// LoginOutput contains the login response.
+// LoginOutput contains the login response (HTTP 302 redirect URL).
 type LoginOutput struct {
-	Token string
+	RedirectURL string
 }
 
 // AuthenticateUserUseCase orchestrates the login flow.
+// Per ADR-010: returns redirect URL with code; client exchanges code for JWT via POST /auth/token.
 type AuthenticateUserUseCase struct {
-	tenantRepo         repository.TenantRepository
-	productRepo        repository.ProductRepository
-	userRepo           repository.UserRepository
+	tenantRepo          repository.TenantRepository
+	productRepo         repository.ProductRepository
+	userRepo            repository.UserRepository
 	subscriptionRepo    repository.SubscriptionRepository
-	userProductAccRepo repository.UserProductAccessRepository
-	passwordSvc        service.PasswordService
-	jwtSvc             service.JWTService
-	audienceBaseDomain string
+	userProductAccRepo  repository.UserProductAccessRepository
+	passwordSvc         service.PasswordService
+	authCodeStore       service.AuthCodeStore
+	redirectBaseDomain  string
 }
 
 // NewAuthenticateUserUseCase creates a new AuthenticateUserUseCase.
@@ -46,8 +53,8 @@ func NewAuthenticateUserUseCase(
 	subscriptionRepo repository.SubscriptionRepository,
 	userProductAccRepo repository.UserProductAccessRepository,
 	passwordSvc service.PasswordService,
-	jwtSvc service.JWTService,
-	audienceBaseDomain string,
+	authCodeStore service.AuthCodeStore,
+	redirectBaseDomain string,
 ) *AuthenticateUserUseCase {
 	return &AuthenticateUserUseCase{
 		tenantRepo:         tenantRepo,
@@ -56,8 +63,8 @@ func NewAuthenticateUserUseCase(
 		subscriptionRepo:   subscriptionRepo,
 		userProductAccRepo: userProductAccRepo,
 		passwordSvc:        passwordSvc,
-		jwtSvc:             jwtSvc,
-		audienceBaseDomain: audienceBaseDomain,
+		authCodeStore:      authCodeStore,
+		redirectBaseDomain: redirectBaseDomain,
 	}
 }
 
@@ -131,18 +138,27 @@ func (uc *AuthenticateUserUseCase) Execute(ctx context.Context, input LoginInput
 		accessProfile = upa.AccessProfile
 	}
 
-	// 7. Build JWT claims and sign
-	aud := tenant.Slug + "." + uc.audienceBaseDomain
-	claims := service.JWTClaims{
-		Subject:           user.ID.String(),
-		Audience:           aud,
-		TenantID:           tenant.ID.String(),
-		UserAccessProfile:  accessProfile,
-	}
-	token, err := uc.jwtSvc.Sign(ctx, claims)
+	// 7. Generate authorization code and store in Redis
+	aud := tenant.Slug + "." + uc.redirectBaseDomain
+	code, err := generateAuthCode()
 	if err != nil {
 		return nil, err
 	}
+	data := &service.AuthCodeData{
+		Subject:           user.ID.String(),
+		Audience:          aud,
+		TenantID:          tenant.ID.String(),
+		UserAccessProfile: accessProfile,
+	}
+	if err := uc.authCodeStore.Store(ctx, code, data, authCodeTTLSeconds); err != nil {
+		log.Printf("[AuthenticateUser] auth code store failed: %v", err)
+		return nil, domain.ErrAuthCodeStorageUnavailable
+	}
 
-	return &LoginOutput{Token: token}, nil
+	// 8. Build redirect URL (tenant_slug.base_domain/product_slug/callback?code=...&state=...)
+	stateEnc := url.QueryEscape(input.State)
+	redirectURL := fmt.Sprintf("https://%s.%s/%s/callback?code=%s&state=%s",
+		tenant.Slug, uc.redirectBaseDomain, product.Slug, code, stateEnc)
+
+	return &LoginOutput{RedirectURL: redirectURL}, nil
 }

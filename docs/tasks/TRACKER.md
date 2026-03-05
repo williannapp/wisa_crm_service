@@ -46,7 +46,7 @@ docs/tasks/
 | [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 3/3 | Concluída |
 | [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 6/6 | Concluída |
 | [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
-| [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 0/5 | Pendente |
+| [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
 
 ---
 
@@ -174,6 +174,18 @@ docs/tasks/
 - **Features/fixes criados:** 007-auth-code-flow-redis (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-redis-infraestrutura.md](features/007-auth-code-flow-redis/fase-1-redis-infraestrutura.md)
+
+### Sessão 13 — 2026-03-05
+- **Atividades realizadas:**
+  - Implementação completa da Feature 007 — Authorization Code Flow com Redis
+  - Fase 1: Redis no docker-compose, REDIS_URL em .env.example, cache.NewRedisClient em infrastructure/cache
+  - Fase 2: AuthCodeData, AuthCodeStore, RedisAuthCodeStore com GetDel (single-use), ErrCodeInvalidOrExpired, ErrAuthCodeStorageUnavailable
+  - Fase 3: LoginInput.State, LoginOutput.RedirectURL, generateAuthCode (crypto/rand), authCodeStore no Use Case, c.Redirect(302)
+  - Fase 4: ExchangeCodeForTokenUseCase, AuthHandler.Token, POST /api/v1/auth/token, TokenRequest/TokenResponse
+  - Fase 5: docs/integration/auth-code-flow-integration.md com guia para clientes (callback, state, troca code, validação JWT)
+- **Features/fixes concluídos:** 007-auth-code-flow-redis
+- **Tasks concluídas:** 5/5 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---
 

@@ -1,4 +1,14 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   postgres:
     build:
       context: ./backend/docker/database
@@ -27,11 +37,14 @@ services:
       PORT: 8080
       APP_ENV: development
       DATABASE_URL: postgres://wisa_crm:wisa_crm_secret@postgres:5432/wisa_crm_db?sslmode=disable&options=-c%20search_path=wisa_crm_db
+      REDIS_URL: redis://redis:6379/0
       JWT_PRIVATE_KEY_PATH: /app/private.pem
     volumes:
       - ./backend/private.pem:/app/private.pem:ro
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 volumes:

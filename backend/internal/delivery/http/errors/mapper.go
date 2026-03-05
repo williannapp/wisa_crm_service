@@ -36,6 +36,10 @@ func MapToAppError(err error) *apperrors.AppError {
 		return apperrors.NewSubscriptionExpired()
 	case errors.Is(err, domain.ErrRateLimitExceeded):
 		return apperrors.NewRateLimitExceeded()
+	case errors.Is(err, domain.ErrCodeInvalidOrExpired):
+		return apperrors.NewCodeInvalidOrExpired()
+	case errors.Is(err, domain.ErrAuthCodeStorageUnavailable):
+		return apperrors.NewServiceUnavailable()
 	case errors.Is(err, domain.ErrInvalidCredentials):
 		// Auth context: use case converts UserNotFound/TenantNotFound to this per ADR-010
 		return apperrors.NewInvalidCredentials()

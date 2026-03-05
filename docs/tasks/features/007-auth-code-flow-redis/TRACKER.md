@@ -10,11 +10,11 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Infraestrutura Redis (Docker, variáveis de ambiente, cliente Go) | 0/1 | Pendente |
-| Fase 2 | Armazenamento de Authorization Code no Redis (interface, implementação, TTL 40s) | 0/1 | Pendente |
-| Fase 3 | Alteração do endpoint de login (gerar code, armazenar no Redis, responder HTTP 302) | 0/1 | Pendente |
-| Fase 4 | Endpoint POST /api/v1/auth/token (validar code, remover do Redis, retornar JWT) | 0/1 | Pendente |
-| Fase 5 | Documentação de integração para o cliente (GET /callback, troca code por token) | 0/1 | Pendente |
+| Fase 1 | Infraestrutura Redis (Docker, variáveis de ambiente, cliente Go) | 1/1 | Concluída |
+| Fase 2 | Armazenamento de Authorization Code no Redis (interface, implementação, TTL 40s) | 1/1 | Concluída |
+| Fase 3 | Alteração do endpoint de login (gerar code, armazenar no Redis, responder HTTP 302) | 1/1 | Concluída |
+| Fase 4 | Endpoint POST /api/v1/auth/token (validar code, remover do Redis, retornar JWT) | 1/1 | Concluída |
+| Fase 5 | Documentação de integração para o cliente (GET /callback, troca code por token) | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -26,11 +26,11 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Adicionar Redis ao Docker Compose, variáveis de ambiente (REDIS_URL), cliente Redis em Go
-- [ ] Fase 2 — Interface AuthCodeStore, implementação Redis com TTL 40s, estrutura de dados para claims do JWT
-- [ ] Fase 3 — Modificar Use Case e handler de login: gerar code aleatório, armazenar no Redis, responder HTTP 302 para redirect_url
-- [ ] Fase 4 — Novo Use Case ExchangeCodeForToken, handler POST /api/v1/auth/token, resposta { access_token, expires_in }
-- [ ] Fase 5 — Documentação para aplicações clientes: GET /callback, troca de code por token, validação de state
+- [x] Fase 1 — Adicionar Redis ao Docker Compose, variáveis de ambiente (REDIS_URL), cliente Redis em Go
+- [x] Fase 2 — Interface AuthCodeStore, implementação Redis com TTL 40s, estrutura de dados para claims do JWT
+- [x] Fase 3 — Modificar Use Case e handler de login: gerar code aleatório, armazenar no Redis, responder HTTP 302 para redirect_url
+- [x] Fase 4 — Novo Use Case ExchangeCodeForToken, handler POST /api/v1/auth/token, resposta { access_token, expires_in }
+- [x] Fase 5 — Documentação para aplicações clientes: GET /callback, troca de code por token, validação de state
 
 ## Dependências entre Fases
 
@@ -61,6 +61,7 @@
 ## Referências
 
 - [docs/context.md](../../context.md)
+- [docs/integration/auth-code-flow-integration.md](../../integration/auth-code-flow-integration.md) — Guia de integração para clientes
 - [ATA-2025-03-05 — Redirect Seguro e Passagem de JWT](../../DON'T%20READ/ideas-new-features/ATA-2025-03-05-redirect-seguro-e-passagem-jwt.md)
 - [ADR-005 — Clean Architecture](../../adrs/ADR-005-clean-architecture.md)
 - [ADR-006 — JWT com Assinatura Assimétrica](../../adrs/ADR-006-jwt-com-assinatura-assimetrica.md)

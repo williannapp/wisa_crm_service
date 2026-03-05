@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"wisa-crm-service/backend/internal/delivery/http/dto"
@@ -11,15 +13,20 @@ import (
 
 // AuthHandler handles authentication-related HTTP requests.
 type AuthHandler struct {
-	authenticateUser *auth.AuthenticateUserUseCase
+	authenticateUser     *auth.AuthenticateUserUseCase
+	exchangeCodeForToken *auth.ExchangeCodeForTokenUseCase
 }
 
 // NewAuthHandler creates a new AuthHandler.
-func NewAuthHandler(authenticateUser *auth.AuthenticateUserUseCase) *AuthHandler {
-	return &AuthHandler{authenticateUser: authenticateUser}
+func NewAuthHandler(authenticateUser *auth.AuthenticateUserUseCase, exchangeCodeForToken *auth.ExchangeCodeForTokenUseCase) *AuthHandler {
+	return &AuthHandler{
+		authenticateUser:     authenticateUser,
+		exchangeCodeForToken: exchangeCodeForToken,
+	}
 }
 
 // Login handles POST /api/v1/auth/login.
+// On success, responds with HTTP 302 redirect to client callback URL with code and state.
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -32,11 +39,34 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		ProductSlug: req.ProductSlug,
 		UserEmail:   req.UserEmail,
 		Password:    req.Password,
+		State:       req.State,
 	})
 	if err != nil {
 		deliveryerrors.RespondWithError(c, err)
 		return
 	}
 
-	c.JSON(200, dto.LoginResponse{Token: out.Token})
+	c.Redirect(http.StatusFound, out.RedirectURL)
+}
+
+// Token handles POST /api/v1/auth/token (exchange authorization code for JWT).
+func (h *AuthHandler) Token(c *gin.Context) {
+	var req dto.TokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(apperrors.HTTPBadRequest, apperrors.NewInvalidRequest("Dados inválidos. O campo code é obrigatório."))
+		return
+	}
+
+	out, err := h.exchangeCodeForToken.Execute(c.Request.Context(), auth.ExchangeCodeInput{
+		Code: req.Code,
+	})
+	if err != nil {
+		deliveryerrors.RespondWithError(c, err)
+		return
+	}
+
+	c.JSON(200, dto.TokenResponse{
+		AccessToken: out.AccessToken,
+		ExpiresIn:   out.ExpiresIn,
+	})
 }
