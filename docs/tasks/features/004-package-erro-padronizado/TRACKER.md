@@ -10,9 +10,9 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Estrutura de diretórios e tipo estruturado AppError | 0/1 | Pendente |
-| Fase 2 | Catálogo de códigos de erro e mapeamento domain→AppError | 0/1 | Pendente |
-| Fase 3 | ErrorMapper na delivery e integração com handlers | 0/1 | Pendente |
+| Fase 1 | Estrutura de diretórios e tipo estruturado AppError | 1/1 | Concluída |
+| Fase 2 | Catálogo de códigos de erro e mapeamento domain→AppError | 1/1 | Concluída |
+| Fase 3 | ErrorMapper na delivery e integração com handlers | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -22,9 +22,9 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar estrutura `pkg/errors/` e tipo estruturado AppError (código, mensagem, detalhe, status HTTP)
-- [ ] Fase 2 — Definir catálogo de códigos padronizados e lógica de mapeamento domain→AppError
-- [ ] Fase 3 — Implementar ErrorMapper na camada delivery, garantir conformidade Clean Architecture e evitar vazamento de informações
+- [x] Fase 1 — Criar estrutura `pkg/errors/` e tipo estruturado AppError (código, mensagem, detalhe, status HTTP)
+- [x] Fase 2 — Definir catálogo de códigos padronizados e lógica de mapeamento domain→AppError
+- [x] Fase 3 — Implementar ErrorMapper na camada delivery, garantir conformidade Clean Architecture e evitar vazamento de informações
 
 ## Dependências entre Fases
 

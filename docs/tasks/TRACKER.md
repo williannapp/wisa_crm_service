@@ -40,7 +40,7 @@ docs/tasks/
 | [001-estrutura-inicial-backend](features/001-estrutura-inicial-backend/TRACKER.md) | Estrutura inicial do backend: diretórios, libs, .gitignore, env, Dockerfile, health | 6/6 | Concluída |
 | [002-configuracao-banco-dados](features/002-configuracao-banco-dados/TRACKER.md) | Configuração do banco: estrutura base, env, containers, documentação, ORM/migrations | 5/5 | Concluída |
 | [003-estrutura-tabelas-banco-dados](features/003-estrutura-tabelas-banco-dados/TRACKER.md) | Estrutura de tabelas: schema wisa_crm_db, tenants, products, subscriptions, payments, users, user_product_access, refresh_tokens, audit_logs | 6/6 | Concluída |
-| [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 0/3 | Pendente |
+| [004-package-erro-padronizado](features/004-package-erro-padronizado/TRACKER.md) | Package de erro padronizado: estrutura pkg/errors, AppError, catálogo de códigos, ErrorMapper, integração na delivery | 3/3 | Concluída |
 
 ---
 
@@ -118,6 +118,17 @@ docs/tasks/
 - **Features/fixes criados:** 004-package-erro-padronizado (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-diretorios-tipo-erro.md](features/004-package-erro-padronizado/fase-1-estrutura-diretorios-tipo-erro.md)
+
+### Sessão 8 — 2026-03-04
+- **Atividades realizadas:**
+  - Implementação completa da Feature 004 — Package de Erro Padronizado
+  - Fase 1: pkg/errors com AppError, NewAppError, codes.go, MarshalJSON
+  - Fase 2: Catálogo completo (INVALID_CREDENTIALS, ACCOUNT_LOCKED, etc.), domain/errors.go, MapToAppError em delivery/http/errors
+  - Fase 3: RespondWithError, Recovery middleware em infrastructure/http/middleware, registro no router
+  - Documentação em docs/backend/README.md
+- **Features/fixes concluídos:** 004-package-erro-padronizado
+- **Tasks concluídas:** 3/3 fases
+- **Próximas atividades:** Implementar próxima feature conforme TRACKER
 
 ---
 

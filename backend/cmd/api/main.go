@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"wisa-crm-service/backend/internal/delivery/http/handler"
+	"wisa-crm-service/backend/internal/infrastructure/http/middleware"
 	"wisa-crm-service/backend/internal/infrastructure/persistence"
 )
 
@@ -42,7 +43,9 @@ func main() {
 		port = "8080"
 	}
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(middleware.Recovery())
 	router.GET("/health", handler.HealthHandler)
 
 	addr := ":" + port
