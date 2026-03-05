@@ -20,7 +20,8 @@ docs/tasks/
 │   ├── 004-package-erro-padronizado/
 │   ├── 005-endpoint-login/
 │   ├── 006-jwt-cookie-redirect-url/
-│   └── 007-auth-code-flow-redis/
+│   ├── 007-auth-code-flow-redis/
+│   └── 008-refresh-token-endpoint/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -47,6 +48,7 @@ docs/tasks/
 | [005-endpoint-login](features/005-endpoint-login/TRACKER.md) | Endpoint POST /api/v1/auth/login: validações (tenant, product, email, senha, status, assinatura), emissão JWT RS256. URL: slug.domain.com.br/product_slug | 6/6 | Concluída |
 | [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
 | [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
+| [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 0/4 | Pendente |
 
 ---
 
@@ -186,6 +188,15 @@ docs/tasks/
 - **Features/fixes concluídos:** 007-auth-code-flow-redis
 - **Tasks concluídas:** 5/5 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 14 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 008 — Refresh Token Endpoint
+  - Criação dos documentos de planejamento para as 4 fases: (1) Migration product_id em refresh_tokens, (2) Refresh token no fluxo token exchange, (3) Endpoint POST /auth/refresh, (4) Documentação de integração
+  - Análise: tabela refresh_tokens precisa de product_id para validação por tenant_slug e product_slug
+- **Features/fixes criados:** 008-refresh-token-endpoint (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-migration-product-id-refresh-tokens.md](features/008-refresh-token-endpoint/fase-1-migration-product-id-refresh-tokens.md)
 
 ---
 

@@ -177,7 +177,7 @@ Retornar:
 # 📌 BACKEND - Refresh Token
 
 
-1) Implementar endpoint para renovação de sessão.
+1) Implementar endpoint para renovação de token.
 
 - O endpoint deve:
 
@@ -193,7 +193,7 @@ Retornar:
         - Revogar o refresh token atual (revoked_at = NOW())
         - Gerar:
             - Novo Access Token (expiração de 15 minutos)
-            - Novo Refresh Token (expiração até D+7)
+            - Novo Refresh Token
             - Inserir novo refresh token no banco como hash
         - O Access Token deve:
             - Não ser armazenado em banco
