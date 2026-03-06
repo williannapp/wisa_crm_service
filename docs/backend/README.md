@@ -19,7 +19,8 @@
 
 1. `docker compose up`
 2. Backend disponível em http://localhost:8080
-3. Health check: http://localhost:8080/health
+3. Frontend disponível em http://localhost:4200
+4. Health check: http://localhost:8080/health
 
 ### Opção 3: PostgreSQL local (sem Docker)
 

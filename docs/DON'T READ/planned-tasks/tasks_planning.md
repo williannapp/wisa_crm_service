@@ -307,3 +307,14 @@ HTTP 429
 3. Adicione o arquivo `.gitignore` para evitar que arquivos desnecessários sejam enviados ao repositório.
 5. Crie um `Dockerfile` para executar o código do frontend.
 6. Adicione no docker compose 
+
+--------
+
+# 📌 FRONT END - Create the Login Screen
+
+## 1. Estrutura Inicial do Projeto
+
+1. Crie a tela de login do sistema
+2. O desing pode ser baseado do prototipo que criei de teste armazenado em @Login-Wisa
+
+-------- 

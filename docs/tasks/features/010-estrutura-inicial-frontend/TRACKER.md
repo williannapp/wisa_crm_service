@@ -10,11 +10,11 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Estrutura de diretórios do frontend | 0/1 | Pendente |
-| Fase 2 | Importar bibliotecas necessárias | 0/1 | Pendente |
-| Fase 3 | Adicionar .gitignore | 0/1 | Pendente |
-| Fase 4 | Criar Dockerfile | 0/1 | Pendente |
-| Fase 5 | Adicionar serviço no Docker Compose | 0/1 | Pendente |
+| Fase 1 | Estrutura de diretórios do frontend | 1/1 | Concluída |
+| Fase 2 | Importar bibliotecas necessárias | 1/1 | Concluída |
+| Fase 3 | Adicionar .gitignore | 1/1 | Concluída |
+| Fase 4 | Criar Dockerfile | 1/1 | Concluída |
+| Fase 5 | Adicionar serviço no Docker Compose | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -26,8 +26,8 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar estrutura de diretórios do frontend em `frontend/` conforme guidelines Angular e Clean Architecture aplicada ao frontend
-- [ ] Fase 2 — Inicializar projeto Angular v20+ e importar bibliotecas necessárias
-- [ ] Fase 3 — Adicionar .gitignore em `frontend/` para evitar commits desnecessários
-- [ ] Fase 4 — Criar Dockerfile multi-stage para build e execução do frontend
-- [ ] Fase 5 — Adicionar serviço `frontend` no docker-compose.yml
+- [x] Fase 1 — Criar estrutura de diretórios do frontend em `frontend/` conforme guidelines Angular e Clean Architecture aplicada ao frontend
+- [x] Fase 2 — Inicializar projeto Angular (v18) e importar bibliotecas necessárias
+- [x] Fase 3 — Adicionar .gitignore em `frontend/` para evitar commits desnecessários
+- [x] Fase 4 — Criar Dockerfile multi-stage para build e execução do frontend
+- [x] Fase 5 — Adicionar serviço `frontend` no docker-compose.yml
