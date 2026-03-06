@@ -21,7 +21,8 @@ docs/tasks/
 │   ├── 005-endpoint-login/
 │   ├── 006-jwt-cookie-redirect-url/
 │   ├── 007-auth-code-flow-redis/
-│   └── 008-refresh-token-endpoint/
+│   ├── 008-refresh-token-endpoint/
+│   └── 009-public-key-endpoint/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -49,6 +50,7 @@ docs/tasks/
 | [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
 | [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
 | [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
+| [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 0/3 | Pendente |
 
 ---
 
@@ -208,6 +210,15 @@ docs/tasks/
 - **Features/fixes concluídos:** 008-refresh-token-endpoint
 - **Tasks concluídas:** 4/4 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 16 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 009 — Public Key Endpoint (JWKS)
+  - Criação dos documentos de planejamento para as 3 fases: (1) JWKS Provider extração chave pública, (2) Endpoint GET /.well-known/jwks.json, (3) Documentação integração e VPS/NGINX
+  - Criação de docs/vps/configurations.md com config NGINX para endpoint JWKS
+- **Features/fixes criados:** 009-public-key-endpoint (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-jwks-provider-extrair-chave-publica.md](features/009-public-key-endpoint/fase-1-jwks-provider-extrair-chave-publica.md)
 
 ---
 
