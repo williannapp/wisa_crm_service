@@ -24,7 +24,8 @@ docs/tasks/
 │   ├── 008-refresh-token-endpoint/
 │   ├── 009-public-key-endpoint/
 │   ├── 010-estrutura-inicial-frontend/
-│   └── 011-tela-login/
+│   ├── 011-tela-login/
+│   └── 012-frontend-login-implementation/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -55,6 +56,7 @@ docs/tasks/
 | [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
 | [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 5/5 | Concluída |
 | [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 5/5 | Concluída |
+| [012-frontend-login-implementation](features/012-frontend-login-implementation/TRACKER.md) | Implementação do login no frontend: parâmetros de query (tenant_slug, product_slug, state), validação, POST /auth/login, redirect | 0/3 | Pendente |
 
 ---
 
@@ -276,6 +278,15 @@ docs/tasks/
 - **Features/fixes concluídos:** 011-tela-login
 - **Tasks concluídas:** 5/5 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 22 — 2026-03-06
+- **Atividades realizadas:**
+  - Planejamento da Feature 012 — Frontend Login Implementation
+  - Criação dos documentos de planejamento para as 3 fases: (1) Parâmetros de query e validação (tenant_slug, product_slug, state), (2) Serviço de autenticação e configuração HTTP, (3) Integração do formulário, submit e redirect
+  - Análise: frontend espera resposta JSON com redirect_url; backend atual retorna HTTP 302 — documentado como pré-requisito para ajuste no backend se necessário
+- **Features/fixes criados:** 012-frontend-login-implementation (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-parametros-query-validacao.md](features/012-frontend-login-implementation/fase-1-parametros-query-validacao.md)
 
 ---
 
