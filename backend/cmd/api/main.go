@@ -98,6 +98,16 @@ func main() {
 				log.Fatalf("JWT service initialization failed: %v", err)
 			}
 
+			jwksProvider, err := crypto.NewRSAJWKSProvider(crypto.RSAJWTConfig{
+				PrivateKeyPath: jwtPrivateKeyPath,
+				KeyID:          getEnv("JWT_KEY_ID", "key-2026-v1"),
+			})
+			if err != nil {
+				log.Fatalf("JWKS provider initialization failed: %v", err)
+			}
+			jwksHandler := handler.NewJWKSHandler(jwksProvider)
+			router.GET("/.well-known/jwks.json", jwksHandler.GetJWKS)
+
 			authCodeStore := cache.NewRedisAuthCodeStore(redisClient)
 			redirectBaseDomain := getEnv("JWT_AUD_BASE_DOMAIN", "app.wisa-crm.com")
 

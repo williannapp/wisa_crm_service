@@ -10,9 +10,9 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | JWKS Provider: extrair chave pública RSA e formatar em JWKS (suporte a múltiplas chaves) | 0/1 | Pendente |
-| Fase 2 | Endpoint GET /.well-known/jwks.json: handler, rota pública, Cache-Control | 0/1 | Pendente |
-| Fase 3 | Documentação: integração clientes e configurações VPS/NGINX | 0/1 | Pendente |
+| Fase 1 | JWKS Provider: extrair chave pública RSA e formatar em JWKS (suporte a múltiplas chaves) | 1/1 | Concluída |
+| Fase 2 | Endpoint GET /.well-known/jwks.json: handler, rota pública, Cache-Control | 1/1 | Concluída |
+| Fase 3 | Documentação: integração clientes e configurações VPS/NGINX | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -22,9 +22,9 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Criar JWKSProvider/JWKSService que extrai chave pública do par RSA e formata em RFC 7517 (kty, use, alg, kid, n, e); suportar múltiplas chaves
-- [ ] Fase 2 — Handler GET /.well-known/jwks.json sem autenticação; Content-Type application/json; Cache-Control: public, max-age=86400; kid alinhado com JWT
-- [ ] Fase 3 — Documentar em docs/integration como clientes obtêm a chave; configurar NGINX em docs/vps/configurations.md se necessário
+- [x] Fase 1 — Criar JWKSProvider/JWKSService que extrai chave pública do par RSA e formata em RFC 7517 (kty, use, alg, kid, n, e); suportar múltiplas chaves
+- [x] Fase 2 — Handler GET /.well-known/jwks.json sem autenticação; Content-Type application/json; Cache-Control: public, max-age=86400; kid alinhado com JWT
+- [x] Fase 3 — Documentar em docs/integration como clientes obtêm a chave; configurar NGINX em docs/vps/configurations.md se necessário
 
 ## Dependências entre Fases
 

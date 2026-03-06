@@ -57,6 +57,10 @@ O comando de migrate usa `DATABASE_URL` do ambiente. Carregue `backend/.env` ant
 
 - `GET /health` retorna `{"status":"ok"}` com HTTP 200.
 
+## Endpoints de Descoberta
+
+- **GET /.well-known/jwks.json** — Retorna chaves públicas em formato JWKS (RFC 7517) para validação da assinatura RS256 dos JWTs. Não exige autenticação. Cache 24h (`Cache-Control: public, max-age=86400`). Ver [Obtenção da Chave Pública (JWKS)](../integration/auth-code-flow-integration.md#obtenção-da-chave-pública-jwks).
+
 ## Fluxo de Autenticação (Authorization Code)
 
 O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retornado diretamente — o cliente recebe um code na URL de redirect e o troca pelo token via `POST /auth/token`.
@@ -230,6 +234,7 @@ Ver [docs/integration/auth-code-flow-integration.md](../integration/auth-code-fl
 ### Endpoints para validação
 
 - **Health:** `GET http://localhost:8080/health`
+- **JWKS:** `GET http://localhost:8080/.well-known/jwks.json`
 - **Login:** `POST http://localhost:8080/api/v1/auth/login`
 - **Token:** `POST http://localhost:8080/api/v1/auth/token`
 

@@ -50,7 +50,7 @@ docs/tasks/
 | [006-jwt-cookie-redirect-url](features/006-jwt-cookie-redirect-url/TRACKER.md) | JWT como cookie HttpOnly + redirect_url. Supersedido pela 007 (ATA escolheu Authorization Code + Redis) | — | Cancelada |
 | [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
 | [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
-| [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 0/3 | Pendente |
+| [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
 
 ---
 
@@ -219,6 +219,16 @@ docs/tasks/
 - **Features/fixes criados:** 009-public-key-endpoint (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-jwks-provider-extrair-chave-publica.md](features/009-public-key-endpoint/fase-1-jwks-provider-extrair-chave-publica.md)
+
+### Sessão 17 — 2026-03-05
+- **Atividades realizadas:**
+  - Implementação completa da Feature 009 — Public Key Endpoint (JWKS)
+  - Fase 1: domain/service/jwks_provider.go (JWK, JWKS, JWKSProvider); infrastructure/crypto/rsa_jwks_provider.go (RSAJWKSProvider, conversão rsa.PublicKey → JWK base64url)
+  - Fase 2: delivery/http/handler/jwks_handler.go (JWKSHandler, GetJWKS); rota GET /.well-known/jwks.json no main.go; Cache-Control 24h
+  - Fase 3: Seção "Obtenção da Chave Pública (JWKS)" em docs/integration/auth-code-flow-integration.md; GET /.well-known/jwks.json em docs/backend/README.md; docs/vps/configurations.md já existente
+- **Features/fixes concluídos:** 009-public-key-endpoint
+- **Tasks concluídas:** 3/3 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---
 

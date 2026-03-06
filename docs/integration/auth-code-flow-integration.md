@@ -48,6 +48,62 @@ Este documento orienta as aplicações clientes (ex.: gestao-pocket, sistemas em
 
 ---
 
+## Obtenção da Chave Pública (JWKS)
+
+A aplicação cliente deve obter a chave pública RSA para validar a assinatura dos JWTs. O wisa-crm-service expõe um endpoint padrão em formato JWKS (RFC 7517).
+
+### URL do endpoint
+
+```
+GET {AUTH_SERVER_URL}/.well-known/jwks.json
+```
+
+Exemplo: `https://auth.wisa-crm.com/.well-known/jwks.json`
+
+### Formato da resposta
+
+O endpoint retorna JSON com um array `keys`. Cada chave contém os campos RFC 7517: `kid`, `kty`, `use`, `alg`, `n`, `e`.
+
+```json
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "use": "sig",
+      "alg": "RS256",
+      "kid": "key-2026-v1",
+      "n": "...",
+      "e": "AQAB"
+    }
+  ]
+}
+```
+
+### Uso no cliente
+
+1. **Selecionar a chave pelo `kid`:** O header do JWT contém o claim `kid`. Use-o para localizar a chave correspondente no array `keys` do JWKS.
+2. **Cache:** O endpoint envia `Cache-Control: public, max-age=86400` (24 horas). O cliente pode cachear a resposta localmente e revalidar apenas após expiração do cache.
+3. **Rotação de chaves:** Durante rotação, o JWKS pode conter múltiplas chaves. Tokens antigos (com `kid` anterior) continuam válidos até expirar; novos tokens usam o novo `kid`. Sempre use o `kid` do JWT para escolher a chave correta.
+
+### Exemplo de busca (pseudo-código)
+
+```go
+// Obter JWKS (com cache de 24h)
+jwks := fetchJWKS(authServerURL + "/.well-known/jwks.json")
+
+// Extrair kid do JWT (header)
+kid := decodeJWTHeader(token).Kid
+
+// Encontrar chave correspondente
+key := jwks.Keys.find(k => k.kid == kid)
+publicKey := parseRSAFromJWK(key)
+
+// Validar assinatura
+verify(token, publicKey, alg="RS256")
+```
+
+---
+
 ## Implementação do Callback (Backend do Cliente)
 
 O **backend** da aplicação cliente deve implementar um endpoint que recebe o redirect do auth:
