@@ -23,7 +23,8 @@ docs/tasks/
 │   ├── 007-auth-code-flow-redis/
 │   ├── 008-refresh-token-endpoint/
 │   ├── 009-public-key-endpoint/
-│   └── 010-estrutura-inicial-frontend/
+│   ├── 010-estrutura-inicial-frontend/
+│   └── 011-tela-login/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -53,6 +54,7 @@ docs/tasks/
 | [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
 | [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
 | [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 5/5 | Concluída |
+| [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 0/5 | Pendente |
 
 ---
 
@@ -252,6 +254,16 @@ docs/tasks/
 - **Features/fixes concluídos:** 010-estrutura-inicial-frontend
 - **Tasks concluídas:** 5/5 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 20 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 011 — Tela de Login
+  - Criação dos documentos de planejamento para as 5 fases: (1) Design tokens e estilos base, (2) Estrutura e rota da página de login, (3) Layout da página (gradient, overlay), (4) Card e formulário, (5) Componentes visuais, responsividade e acessibilidade
+  - Design baseado no protótipo Login-Wisa (React/Tailwind); adaptação para Angular/SCSS
+  - Escopo: design apenas, sem lógica de autenticação (a ser implementada em features futuras)
+- **Features/fixes criados:** 011-tela-login (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-design-tokens-estilos.md](features/011-tela-login/fase-1-design-tokens-estilos.md)
 
 ---
 
