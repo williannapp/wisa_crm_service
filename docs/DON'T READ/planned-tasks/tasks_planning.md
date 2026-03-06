@@ -292,3 +292,18 @@ HTTP 429
 
 
 # 📌 BACKEND - Implementação de Testes Unitarios
+
+
+
+
+-------- 
+
+# 📌 FRONT END - Basic Structure (Directories and Imports)
+
+## 1. Estrutura Inicial do Projeto
+
+1. Crie a estrutura de diretórios do frontend dentro da pasta `frontend`.
+2. Importe as bibliotecas necessárias para iniciar o projeto.
+3. Adicione o arquivo `.gitignore` para evitar que arquivos desnecessários sejam enviados ao repositório.
+5. Crie um `Dockerfile` para executar o código do frontend.
+6. Adicione no docker compose 

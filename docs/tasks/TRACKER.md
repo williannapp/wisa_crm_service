@@ -22,7 +22,8 @@ docs/tasks/
 │   ├── 006-jwt-cookie-redirect-url/
 │   ├── 007-auth-code-flow-redis/
 │   ├── 008-refresh-token-endpoint/
-│   └── 009-public-key-endpoint/
+│   ├── 009-public-key-endpoint/
+│   └── 010-estrutura-inicial-frontend/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -51,6 +52,7 @@ docs/tasks/
 | [007-auth-code-flow-redis](features/007-auth-code-flow-redis/TRACKER.md) | Authorization Code Flow: Redis para codes, login retorna 302, POST /auth/token troca code por JWT. TTL 40s. Cliente implementa GET /callback | 5/5 | Concluída |
 | [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
 | [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
+| [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 0/5 | Pendente |
 
 ---
 
@@ -229,6 +231,14 @@ docs/tasks/
 - **Features/fixes concluídos:** 009-public-key-endpoint
 - **Tasks concluídas:** 3/3 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 18 — 2026-03-05
+- **Atividades realizadas:**
+  - Planejamento da Feature 010 — Estrutura Inicial do Frontend
+  - Criação dos documentos de planejamento para as 5 fases: (1) Estrutura de diretórios Angular, (2) Importar bibliotecas, (3) .gitignore, (4) Dockerfile multi-stage, (5) Docker Compose
+- **Features/fixes criados:** 010-estrutura-inicial-frontend (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-diretorios.md](features/010-estrutura-inicial-frontend/fase-1-estrutura-diretorios.md)
 
 ---
 
