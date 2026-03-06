@@ -1,0 +1,33 @@
+// Design tokens baseados no protótipo Login-Wisa
+// Valores equivalentes: Tailwind slate-900, blue-900, blue-500, etc.
+:root {
+  // Gradiente de fundo (from-[#0f172a] via-[#1e3a8a] to-[#3b82f6])
+  --login-bg-start: #0f172a;
+  --login-bg-mid: #1e3a8a;
+  --login-bg-end: #3b82f6;
+
+  // Card (bg-white/95 backdrop-blur, barra from-blue-600 to-cyan-400)
+  --login-card-bg: rgba(255, 255, 255, 0.95);
+  --login-card-bar-start: #2563eb;
+  --login-card-bar-end: #22d3ee;
+
+  // Tipografia (slate-900, slate-500, slate-700)
+  --login-title: #0f172a;
+  --login-description: #64748b;
+  --login-label: #334155;
+  --login-link: #2563eb;
+  --login-link-hover: #1d4ed8;
+
+  // Inputs (slate-50, slate-200, blue-500 focus)
+  --login-input-bg: #f8fafc;
+  --login-input-border: #e2e8f0;
+  --login-input-focus: #3b82f6;
+
+  // Botão (blue-600, blue-700 hover)
+  --login-btn-bg: #2563eb;
+  --login-btn-hover: #1d4ed8;
+  --login-btn-shadow: rgba(37, 99, 235, 0.2);
+
+  // Overlay de textura (noise)
+  --login-noise-url: url('/images/noise.svg');
+}

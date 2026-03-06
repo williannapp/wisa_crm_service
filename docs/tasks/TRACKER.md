@@ -54,7 +54,7 @@ docs/tasks/
 | [008-refresh-token-endpoint](features/008-refresh-token-endpoint/TRACKER.md) | Refresh Token: migration product_id, refresh no token exchange, POST /auth/refresh, validação hash+tenant+product, rotação atômica, 7 dias | 4/4 | Concluída |
 | [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
 | [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 5/5 | Concluída |
-| [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 0/5 | Pendente |
+| [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 5/5 | Concluída |
 
 ---
 
@@ -264,6 +264,18 @@ docs/tasks/
 - **Features/fixes criados:** 011-tela-login (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-design-tokens-estilos.md](features/011-tela-login/fase-1-design-tokens-estilos.md)
+
+### Sessão 21 — 2026-03-05
+- **Atividades realizadas:**
+  - Implementação completa da Feature 011 — Tela de Login
+  - Fase 1: Design tokens em `frontend/src/styles/_login-tokens.scss`, fonte Inter em index.html, variáveis CSS para gradiente, card, tipografia, inputs e botão
+  - Fase 2: LoginPageComponent em `features/auth/login/`, rota lazy-loaded `/login`, redirecionamento `''` → `'login'`
+  - Fase 3: Layout full-screen com gradient (slate→blue), overlay de textura noise.svg, centralização flex
+  - Fase 4: Card com barra gradient, formulário usuário/senha, ícones SVG inline (User, Lock, Eye/EyeOff), toggle senha, Signals (username, password, showPassword)
+  - Fase 5: data-testid em elementos interativos, labels for/id, aria-label no toggle, responsividade (padding, min-height 44px touch targets), required e autocomplete nos inputs, preventDefault nos links placeholder
+- **Features/fixes concluídos:** 011-tela-login
+- **Tasks concluídas:** 5/5 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---
 

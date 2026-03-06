@@ -10,11 +10,11 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Design tokens e estilos base | 0/1 | Pendente |
-| Fase 2 | Estrutura e rota da página de login | 0/1 | Pendente |
-| Fase 3 | Layout da página (container, gradient, overlay) | 0/1 | Pendente |
-| Fase 4 | Card e formulário (estrutura visual) | 0/1 | Pendente |
-| Fase 5 | Componentes visuais, responsividade e acessibilidade | 0/1 | Pendente |
+| Fase 1 | Design tokens e estilos base | 1/1 | Concluída |
+| Fase 2 | Estrutura e rota da página de login | 1/1 | Concluída |
+| Fase 3 | Layout da página (container, gradient, overlay) | 1/1 | Concluída |
+| Fase 4 | Card e formulário (estrutura visual) | 1/1 | Concluída |
+| Fase 5 | Componentes visuais, responsividade e acessibilidade | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -26,11 +26,11 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Definir design tokens (cores, fontes, variáveis CSS) baseados no protótipo Login-Wisa
-- [ ] Fase 2 — Criar componente LoginPage em `features/auth/login`, configurar rota lazy-loaded `/login`
-- [ ] Fase 3 — Implementar layout da página: container full-screen, gradient background, overlay de textura
-- [ ] Fase 4 — Implementar card com formulário: campos usuário/senha, botão, links (apenas design, sem lógica)
-- [ ] Fase 5 — Adicionar ícones, toggle senha, responsividade, acessibilidade e data-testid
+- [x] Fase 1 — Definir design tokens (cores, fontes, variáveis CSS) baseados no protótipo Login-Wisa
+- [x] Fase 2 — Criar componente LoginPage em `features/auth/login`, configurar rota lazy-loaded `/login`
+- [x] Fase 3 — Implementar layout da página: container full-screen, gradient background, overlay de textura
+- [x] Fase 4 — Implementar card com formulário: campos usuário/senha, botão, links (apenas design, sem lógica)
+- [x] Fase 5 — Adicionar ícones, toggle senha, responsividade, acessibilidade e data-testid
 
 ## Escopo
 

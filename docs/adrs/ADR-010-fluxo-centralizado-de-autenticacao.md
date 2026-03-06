@@ -75,7 +75,7 @@ Isso cria desafios específicos que precisam ser explicitamente endereçados:
      │                   │◀─────────────────────────────────│
      │                   │                                  │
      │ Frontend auth: window.location = redirect_url         │
-     │ GET https://cliente1.wisa.labs.com.br/gestao-pocket?code=abc&state=...
+     │ GET https://cliente1.wisa.labs.com.br/gestao-pocket/callback?code=abc&state=...
      ├──────────────────▶│                                  │
      │                   │ Extrai code da URL                │
      │                   │ POST /api/v1/auth/token           │
