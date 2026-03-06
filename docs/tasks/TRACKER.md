@@ -56,7 +56,7 @@ docs/tasks/
 | [009-public-key-endpoint](features/009-public-key-endpoint/TRACKER.md) | Endpoint público GET /.well-known/jwks.json: JWKS Provider, chave pública RSA, sem autenticação, Cache-Control 24h, suporte a múltiplas chaves | 3/3 | Concluída |
 | [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 5/5 | Concluída |
 | [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 5/5 | Concluída |
-| [012-frontend-login-implementation](features/012-frontend-login-implementation/TRACKER.md) | Implementação do login no frontend: parâmetros de query (tenant_slug, product_slug, state), validação, POST /auth/login, redirect | 0/3 | Pendente |
+| [012-frontend-login-implementation](features/012-frontend-login-implementation/TRACKER.md) | Implementação do login no frontend: parâmetros de query (tenant_slug, product_slug, state), validação, POST /auth/login, redirect | 3/3 | Concluída |
 
 ---
 
@@ -287,6 +287,17 @@ docs/tasks/
 - **Features/fixes criados:** 012-frontend-login-implementation (apenas planejamento)
 - **Tasks concluídas:** —
 - **Próximas atividades:** Implementar Fase 1 conforme [fase-1-parametros-query-validacao.md](features/012-frontend-login-implementation/fase-1-parametros-query-validacao.md)
+
+### Sessão 23 — 2026-03-06
+- **Atividades realizadas:**
+  - Implementação completa da Feature 012 — Frontend Login Implementation
+  - Fase 1: LoginPageComponent lê tenant_slug, product_slug, state via ActivatedRoute; validação no ngOnInit; bloco de erro com role="alert" e data-testid="login-params-error" quando params inválidos
+  - Fase 2: core/http/api-config.ts (API_BASE_URL), core/auth/auth.service.ts (LoginRequest, LoginResponse, login()), provideHttpClient() e API_BASE_URL em app.config; proxy.conf.json para dev (/api → backend:8080)
+  - Backend: auth_handler.go retorna 200 + JSON { redirect_url } quando Accept contém application/json (SPA); mantém 302 para fluxo tradicional
+  - Fase 3: onSubmit com AuthService.login(), window.location.href no sucesso; loginError e isSubmitting; label Email, input type="email"; takeUntilDestroyed para unsubscribe; bloco login-error com data-testid
+- **Features/fixes concluídos:** 012-frontend-login-implementation
+- **Tasks concluídas:** 3/3 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---
 

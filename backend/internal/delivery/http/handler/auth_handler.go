@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -32,7 +33,8 @@ func NewAuthHandler(
 }
 
 // Login handles POST /api/v1/auth/login.
-// On success, responds with HTTP 302 redirect to client callback URL with code and state.
+// On success: if Accept contains application/json (SPA/XHR), responds with 200 + JSON { redirect_url };
+// otherwise responds with HTTP 302 redirect for traditional form submissions.
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -52,6 +54,10 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	if strings.Contains(c.GetHeader("Accept"), "application/json") {
+		c.JSON(http.StatusOK, dto.LoginResponse{RedirectURL: out.RedirectURL})
+		return
+	}
 	c.Redirect(http.StatusFound, out.RedirectURL)
 }
 

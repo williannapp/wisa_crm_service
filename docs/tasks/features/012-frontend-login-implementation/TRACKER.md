@@ -10,9 +10,9 @@
 
 | Fase/Task | Descrição | Progresso | Status |
 |-----------|-----------|-----------|--------|
-| Fase 1 | Leitura e validação dos parâmetros de query (tenant_slug, product_slug, state) | 0/1 | Pendente |
-| Fase 2 | Serviço de autenticação e configuração HTTP | 0/1 | Pendente |
-| Fase 3 | Integração no formulário de login e redirect | 0/1 | Pendente |
+| Fase 1 | Leitura e validação dos parâmetros de query (tenant_slug, product_slug, state) | 1/1 | Concluída |
+| Fase 2 | Serviço de autenticação e configuração HTTP | 1/1 | Concluída |
+| Fase 3 | Integração no formulário de login e redirect | 1/1 | Concluída |
 
 ## Arquivos de Tasks
 
@@ -22,9 +22,9 @@
 
 ## Resumo das Tasks
 
-- [ ] Fase 1 — Receber tenant_slug, product_slug e state via query params; validar no carregamento; exibir mensagem de erro sem chamar backend
-- [ ] Fase 2 — Criar AuthService, configurar HttpClient, definir interface de resposta do login
-- [ ] Fase 3 — Integrar formulário com AuthService; POST ao backend; redirect via window.location.href; tratamento de erros
+- [x] Fase 1 — Receber tenant_slug, product_slug e state via query params; validar no carregamento; exibir mensagem de erro sem chamar backend
+- [x] Fase 2 — Criar AuthService, configurar HttpClient, definir interface de resposta do login
+- [x] Fase 3 — Integrar formulário com AuthService; POST ao backend; redirect via window.location.href; tratamento de erros
 
 ## Escopo
 

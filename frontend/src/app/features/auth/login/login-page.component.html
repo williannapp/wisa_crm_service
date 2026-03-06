@@ -1,5 +1,17 @@
 <main class="login-page__container">
   <div class="login-page__overlay" aria-hidden="true"></div>
+  @if (queryParamsError()) {
+    <div
+      class="login-page__card login-page__card--error"
+      role="alert"
+      data-testid="login-params-error"
+    >
+      <div class="login-page__card-bar"></div>
+      <div class="login-page__card-content">
+        <p class="login-page__error-message">{{ queryParamsError() }}</p>
+      </div>
+    </div>
+  } @else {
   <div class="login-page__card">
     <div class="login-page__card-bar"></div>
     <header class="login-page__card-header">
@@ -15,7 +27,7 @@
         aria-label="Formulário de login"
       >
         <div class="login-page__field">
-          <label class="login-page__label" for="username">Usuário</label>
+          <label class="login-page__label" for="user-email">Email</label>
           <div class="login-page__input-wrapper">
             <span class="login-page__input-icon" aria-hidden="true">
               <svg
@@ -34,15 +46,15 @@
               </svg>
             </span>
             <input
-              id="username"
-              type="text"
+              id="user-email"
+              type="email"
               class="login-page__input"
-              [value]="username()"
-              (input)="username.set($any($event.target).value)"
-              placeholder="Seu nome de usuário"
-              autocomplete="username"
+              [value]="userEmail()"
+              (input)="userEmail.set($any($event.target).value)"
+              placeholder="Seu e-mail"
+              autocomplete="email"
               required
-              data-testid="input-username"
+              data-testid="input-email"
             />
           </div>
         </div>
@@ -136,12 +148,23 @@
             </button>
           </div>
         </div>
+        @if (loginError()) {
+          <div
+            class="login-page__field"
+            role="alert"
+            data-testid="login-error"
+          >
+            <p class="login-page__error-message">{{ loginError() }}</p>
+          </div>
+        }
         <button
           type="submit"
           class="login-page__submit"
+          [disabled]="isSubmitting()"
+          [attr.aria-busy]="isSubmitting()"
           data-testid="button-login"
         >
-          Entrar
+          {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
         </button>
       </form>
     </div>
@@ -159,4 +182,5 @@
       </p>
     </footer>
   </div>
+  }
 </main>

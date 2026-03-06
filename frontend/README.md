@@ -20,6 +20,10 @@ src/app/
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
+**Proxy:** Requisições para `/api` são encaminhadas ao backend em `http://localhost:8080`. Suba o backend antes de testar o login.
+
+**Login:** A rota `/login` exige query params `tenant_slug`, `product_slug` e `state`. Ex.: `http://localhost:4200/login?tenant_slug=cliente1&product_slug=gestao-pocket&state=abc123`
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.

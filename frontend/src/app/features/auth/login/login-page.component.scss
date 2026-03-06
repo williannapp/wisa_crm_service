@@ -230,3 +230,15 @@
   color: var(--login-description);
   margin: 0;
 }
+
+.login-page__card--error .login-page__card-content {
+  padding: 2rem 1.5rem;
+}
+
+.login-page__error-message {
+  font-size: 0.9375rem;
+  color: var(--login-label);
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}

@@ -68,7 +68,7 @@ O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retorna
 
 ### Endpoints
 
-- **POST /api/v1/auth/login** — Autentica usuário e responde HTTP 302 redirect para callback do cliente com `?code=...&state=...`
+- **POST /api/v1/auth/login** — Autentica usuário. Se `Accept` contiver `application/json` (SPA/XHR), responde 200 + JSON `{"redirect_url":"..."}`; caso contrário, responde HTTP 302 redirect para callback do cliente com `?code=...&state=...`
 - **POST /api/v1/auth/token** — Troca o authorization code por JWT (retorna `access_token`, `expires_in`, `refresh_token`, `refresh_expires_in`)
 - **POST /api/v1/auth/refresh** — Renova sessão com refresh token (retorna novo par access + refresh)
 
@@ -83,7 +83,7 @@ O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retorna
 
 ```json
 {
-  "slug": "cliente1",
+  "tenant_slug": "cliente1",
   "product_slug": "crm",
   "user_email": "usuario@empresa.com",
   "password": "senha123",
@@ -91,9 +91,10 @@ O login utiliza o **Authorization Code Flow** (OAuth 2.0). O JWT não é retorna
 }
 ```
 
-### Resposta de sucesso (302)
+### Resposta de sucesso
 
-`Location: https://{tenant_slug}.{JWT_AUD_BASE_DOMAIN}/{product_slug}/callback?code={code}&state={state}`
+- **302** (fluxo tradicional): `Location: https://{tenant_slug}.{JWT_AUD_BASE_DOMAIN}/{product_slug}/callback?code={code}&state={state}`
+- **200** (SPA com `Accept: application/json`): `{"redirect_url": "https://..."}` — o frontend executa `window.location.href = redirect_url`
 
 O code expira em **40 segundos** e é de uso único.
 
