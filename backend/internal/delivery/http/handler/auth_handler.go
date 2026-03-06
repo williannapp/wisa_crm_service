@@ -36,12 +36,12 @@ func NewAuthHandler(
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(apperrors.HTTPBadRequest, apperrors.NewInvalidRequest("Dados inválidos. Verifique slug, product_slug, email e senha."))
+		c.JSON(apperrors.HTTPBadRequest, apperrors.NewInvalidRequest("Dados inválidos. Verifique tenant_slug, product_slug, email e senha."))
 		return
 	}
 
 	out, err := h.authenticateUser.Execute(c.Request.Context(), auth.LoginInput{
-		Slug:        req.Slug,
+		TenantSlug:  req.TenantSlug,
 		ProductSlug: req.ProductSlug,
 		UserEmail:   req.UserEmail,
 		Password:    req.Password,

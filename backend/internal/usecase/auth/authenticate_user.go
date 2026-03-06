@@ -20,7 +20,7 @@ const authCodeTTLSeconds = 40
 
 // LoginInput contains the login request data.
 type LoginInput struct {
-	Slug        string
+	TenantSlug  string
 	ProductSlug string
 	UserEmail   string
 	Password    string
@@ -71,7 +71,7 @@ func NewAuthenticateUserUseCase(
 // Execute runs the authentication flow.
 func (uc *AuthenticateUserUseCase) Execute(ctx context.Context, input LoginInput) (*LoginOutput, error) {
 	// 1. Tenant
-	tenant, err := uc.tenantRepo.FindBySlug(ctx, input.Slug)
+	tenant, err := uc.tenantRepo.FindBySlug(ctx, input.TenantSlug)
 	if err != nil {
 		if errors.Is(err, domain.ErrTenantNotFound) {
 			return nil, domain.ErrInvalidCredentials
