@@ -47,12 +47,16 @@ out/
 # Node (frontend)
 node_modules/
 frontend/node_modules/
+test-app/frontend/node_modules/
 .npm
 .yarn/
 .pnp.*
 frontend/dist/
 frontend/.angular/
 frontend/.cache/
+test-app/frontend/dist/
+test-app/frontend/.angular/
+test-app/frontend/.cache/
 
 # Coverage
 coverage/
@@ -63,5 +67,4 @@ coverage.out
 tmp/
 temp/
 *.tmp
-
 Login-Wisa

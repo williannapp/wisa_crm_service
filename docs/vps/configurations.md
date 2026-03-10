@@ -62,9 +62,16 @@ Deve retornar HTTP 200 com JSON no formato:
 
 ---
 
-## 2. Referências
+## 2. Config NGINX para ambiente Docker (testes)
+
+Para testes de integração E2E em Docker, a pasta `nginx/` na raiz do projeto contém configuração específica que usa **nomes de serviço** (backend, frontend, test-app-backend, test-app-frontend) em vez de `127.0.0.1`. Em VPS, a config seria adaptada com `127.0.0.1` e paths em disco. Ver [nginx/README.md](../../nginx/README.md).
+
+---
+
+## 3. Referências
 
 - [ADR-006 — JWT com Assinatura Assimétrica](../adrs/ADR-006-jwt-com-assinatura-assimetrica.md)
 - [ADR-007 — NGINX como Reverse Proxy](../adrs/ADR-007-nginx-como-reverse-proxy.md)
 - [ADR-009 — Infraestrutura VPS Linux](../adrs/ADR-009-infraestrutura-vps-linux.md)
 - [docs/backend/vps-configurations.md](../backend/vps-configurations.md)
+- [nginx/README.md](../../nginx/README.md) — Config para Docker (testes locais)

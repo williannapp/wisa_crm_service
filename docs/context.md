@@ -128,4 +128,6 @@ A aplicação do cliente, ao receber o JWT, **deve obrigatoriamente**:
 ## Referências Relacionadas
 
 - [Integração com o Fluxo de Authorization Code](./integration/auth-code-flow-integration.md) — Guia definitivo para desenvolvedores integrarem o login em suas aplicações
+- [Test App](../test-app/README.md) — Aplicação de teste (Angular + Go) que demonstra a integração completa com o Auth Code Flow
+- [NGINX para testes E2E](../nginx/README.md) — Configuração do NGINX como reverse proxy para testes com subdomínios (auth.wisa.labs.com.br, lingerie-maria.wisa.labs.com.br)
 - [Solução 2 — Arquitetura de Autenticação e Gestão de Assinaturas](./DON'T READ/ideias/ideias.md)

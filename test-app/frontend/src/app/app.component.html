@@ -1,0 +1,11 @@
+<main class="hello-world">
+  @if (loading()) {
+    <p class="loading">Carregando...</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+    <a href="/login">Fazer login</a>
+  } @else {
+    <h1>{{ message() }}</h1>
+    <p>Test application for Auth Code Flow integration.</p>
+  }
+</main>

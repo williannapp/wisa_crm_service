@@ -1,4 +1,4 @@
-# Feature: bla bla bla..
+# Feature: Create a NGINX configuration to execute tests
 
 ## Seu papel:
 
@@ -31,7 +31,60 @@ Você possui forte domínio de:
 
 ## Entendido o que é este projeto, você deverá **pensar e planejar** detalhadamente a implementação dos seguintes items:
 
-1. Blá, blá blá..
+1. Crie uma folder separada para a config de NGINX
+    - Na pasta separada crie um docker.yaml para rodar o NGINX
+    - Leve em consideração essa config de roteamento:
+
+        ```json
+
+        # Configuração para o subdomínio AUTH
+        server {
+            listen 80;   # ou 443 ssl para HTTPS
+            server_name auth.wisa.labs.com.br;
+
+            # Frontend — SPA Angular
+            location / {
+                proxy_pass http://0.0.0.0:4200;   # no Docker: nome do serviço
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # API — Backend Go
+            location /api/ {
+                proxy_pass http://0.0.0.0:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # JWKS (chave pública)
+            location /.well-known/ {
+                proxy_pass http://0.0.0.0:8080;
+                proxy_set_header Host $host;
+            }
+        }
+
+
+        server {
+            listen 80;
+            server_name lingerie-maria.wisa.labs.com.br;
+
+            location /gestao-pocket {
+                proxy_pass http://0.0.0.0:4201;
+            }
+
+        }
+
+        ```
+    - Revise as configs de roteamento e faça alterações `SE JULGAR NECESSÁRIO`. Se alguma porta estiver errada ou se faltar alguma regra.
+    - Não altere nenhum código dentro de `backend` e `frontend`
+    - Adicione ao docker-compose
+
+- IMPORTANTE
+    - Não altere nenhum código dentro de `backend` e `frontend`
 
 
 # Seu processamento:

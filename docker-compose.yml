@@ -39,6 +39,7 @@ services:
       DATABASE_URL: postgres://wisa_crm:wisa_crm_secret@postgres:5432/wisa_crm_db?sslmode=disable&options=-c%20search_path=wisa_crm_db
       REDIS_URL: redis://redis:6379/0
       JWT_PRIVATE_KEY_PATH: /app/private.pem
+      JWT_AUD_BASE_DOMAIN: wisa.labs.com.br
     volumes:
       - ./backend/private.pem:/app/private.pem:ro
     depends_on:
@@ -55,6 +56,41 @@ services:
       - "4200:80"
     depends_on:
       - backend
+
+  test-app-backend:
+    build:
+      context: ./test-app/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+      AUTH_SERVER_URL: http://auth.wisa.labs.com.br
+      TENANT_SLUG: lingerie-maria
+      PRODUCT_SLUG: gestao-pocket
+      APP_URL: http://lingerie-maria.wisa.labs.com.br
+      FRONTEND_URL: http://lingerie-maria.wisa.labs.com.br
+
+  test-app-frontend:
+    build:
+      context: ./test-app/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4201:80"
+    depends_on:
+      - test-app-backend
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+      - test-app-backend
+      - test-app-frontend
 
 volumes:
   postgres_data:

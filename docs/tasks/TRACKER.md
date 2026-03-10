@@ -26,7 +26,9 @@ docs/tasks/
 │   ├── 010-estrutura-inicial-frontend/
 │   ├── 011-tela-login/
 │   ├── 012-frontend-login-implementation/
-│   └── 013-review-auth-code-flow-documentation/
+│   ├── 013-review-auth-code-flow-documentation/
+│   ├── 014-aplicacao-teste-auth-integration/
+│   └── 015-nginx-config-tests/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -59,6 +61,8 @@ docs/tasks/
 | [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 5/5 | Concluída |
 | [012-frontend-login-implementation](features/012-frontend-login-implementation/TRACKER.md) | Implementação do login no frontend: parâmetros de query (tenant_slug, product_slug, state), validação, POST /auth/login, redirect | 3/3 | Concluída |
 | [013-review-auth-code-flow-documentation](features/013-review-auth-code-flow-documentation/TRACKER.md) | Revisão e aprimoramento da doc auth-code-flow: processo autenticação, refresh, exemplos, tabela erros | 3/3 | Concluída |
+| [014-aplicacao-teste-auth-integration](features/014-aplicacao-teste-auth-integration/TRACKER.md) | Aplicação de teste (Angular + Go) em pasta separada: Hello World, integração Auth Code Flow, validação JWT, refresh | 4/4 | Concluída |
+| [015-nginx-config-tests](features/015-nginx-config-tests/TRACKER.md) | Config NGINX para testes: pasta nginx/, roteamento auth e lingerie-maria, docker-compose, integração ao compose principal | 3/3 | Concluída |
 
 ---
 
@@ -318,6 +322,45 @@ docs/tasks/
   - Fase 3: Ordem de implementação recomendada; JWKS e validação JWT (kid); logout local e futuro; exemplos Go (json.Marshal), TypeScript (SPA), interceptor conceitual; tabela consolidada de erros
 - **Features/fixes concluídos:** 013-review-auth-code-flow-documentation
 - **Tasks concluídas:** 3/3 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 26 — 2026-03-10
+- **Atividades realizadas:**
+  - Planejamento da Feature 014 — Aplicação de Teste com Integração Auth Code Flow
+  - Criação dos documentos de planejamento para as 4 fases: (1) Estrutura base e Hello World, (2) Redirect, callback e token exchange, (3) Validação JWT e rota protegida, (4) Frontend integrado e interceptor com refresh
+  - Aplicação em pasta test-app/ separada; AUTH_SERVER_URL = https://auth.wisa.labs.com.br; conformidade com auth-code-flow-integration.md
+- **Features/fixes criados:** 014-aplicacao-teste-auth-integration (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-estrutura-hello-world.md](features/014-aplicacao-teste-auth-integration/fase-1-estrutura-hello-world.md)
+
+### Sessão 27 — 2026-03-10
+- **Atividades realizadas:**
+  - Implementação completa da Feature 014 — Aplicação de Teste com Integração Auth Code Flow
+  - Fase 1: test-app/backend (Go, Clean Architecture, GET /health), test-app/frontend (Angular 18, Hello World), test-app/README.md
+  - Fase 2: GET /login (state, redirect), GET /callback e /:product/callback (validação state, token exchange, cookies HttpOnly)
+  - Fase 3: JWKSFetcher, JWT Validator (RS256, iss, aud, exp, nbf), middleware JWTAuth, GET /api/hello protegida
+  - Fase 4: POST /api/auth/refresh (proxy ao auth), frontend ApiService, AuthInterceptor (401 → refresh → retry), proxy.conf.json
+- **Features/fixes concluídos:** 014-aplicacao-teste-auth-integration
+- **Tasks concluídas:** 4/4 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 28 — 2026-03-10
+- **Atividades realizadas:**
+  - Planejamento da Feature 015 — Configuração NGINX para Execução de Testes
+  - Criação dos documentos de planejamento para as 3 fases: (1) Config NGINX e roteamento (auth.wisa.labs.com.br, lingerie-maria.wisa.labs.com.br), (2) Docker Compose na pasta nginx, (3) Integração ao docker-compose principal
+  - Revisão das portas (uso de nomes de serviço Docker), adição de rotas para test-app (/api, /login, /callback), decisão de servir test-app na raiz do subdomínio
+- **Features/fixes criados:** 015-nginx-config-tests (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-config-nginx-roteamento.md](features/015-nginx-config-tests/fase-1-config-nginx-roteamento.md)
+
+### Sessão 29 — 2026-03-10
+- **Atividades realizadas:**
+  - Implementação completa da Feature 015 — Configuração NGINX para Testes
+  - Fase 1: Estrutura nginx/ já existia (conf.d/wisa.conf com server blocks auth.wisa.labs.com.br e lingerie-maria.wisa.labs.com.br)
+  - Fase 2: nginx/docker-compose.yml para build isolado; nginx/README.md com instruções de uso
+  - Fase 3: APP_URL e FRONTEND_URL do test-app-backend alterados para http://lingerie-maria.wisa.labs.com.br; atualização docs/vps/configurations.md (seção Config Docker)
+- **Features/fixes concluídos:** 015-nginx-config-tests
+- **Tasks concluídas:** 3/3
 - **Próximas atividades:** Próxima feature conforme TRACKER
 
 ---

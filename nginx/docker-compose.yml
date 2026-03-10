@@ -1,0 +1,11 @@
+# Docker Compose para execução isolada do NGINX.
+# Útil para validar config (nginx -t) e testar o build sem subir a stack completa.
+# Para testes E2E com subdomínios, use o docker-compose.yml da raiz do projeto.
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
