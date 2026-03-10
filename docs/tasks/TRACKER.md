@@ -25,7 +25,8 @@ docs/tasks/
 │   ├── 009-public-key-endpoint/
 │   ├── 010-estrutura-inicial-frontend/
 │   ├── 011-tela-login/
-│   └── 012-frontend-login-implementation/
+│   ├── 012-frontend-login-implementation/
+│   └── 013-review-auth-code-flow-documentation/
 └── fixes/                  ← Correções e bugs
     └── (vazio — para futuras correções)
 ```
@@ -57,6 +58,7 @@ docs/tasks/
 | [010-estrutura-inicial-frontend](features/010-estrutura-inicial-frontend/TRACKER.md) | Estrutura inicial do frontend: diretórios Angular, bibliotecas, .gitignore, Dockerfile, serviço no docker-compose | 5/5 | Concluída |
 | [011-tela-login](features/011-tela-login/TRACKER.md) | Tela de login: design baseado no protótipo Login-Wisa. Design apenas, sem lógica de auth | 5/5 | Concluída |
 | [012-frontend-login-implementation](features/012-frontend-login-implementation/TRACKER.md) | Implementação do login no frontend: parâmetros de query (tenant_slug, product_slug, state), validação, POST /auth/login, redirect | 3/3 | Concluída |
+| [013-review-auth-code-flow-documentation](features/013-review-auth-code-flow-documentation/TRACKER.md) | Revisão e aprimoramento da doc auth-code-flow: processo autenticação, refresh, exemplos, tabela erros | 3/3 | Concluída |
 
 ---
 
@@ -296,6 +298,25 @@ docs/tasks/
   - Backend: auth_handler.go retorna 200 + JSON { redirect_url } quando Accept contém application/json (SPA); mantém 302 para fluxo tradicional
   - Fase 3: onSubmit com AuthService.login(), window.location.href no sucesso; loginError e isSubmitting; label Email, input type="email"; takeUntilDestroyed para unsubscribe; bloco login-error com data-testid
 - **Features/fixes concluídos:** 012-frontend-login-implementation
+- **Tasks concluídas:** 3/3 fases
+- **Próximas atividades:** Próxima feature conforme TRACKER
+
+### Sessão 24 — 2026-03-10
+- **Atividades realizadas:**
+  - Planejamento da Feature 013 — Revisão e Aprimoramento da Documentação Auth Code Flow
+  - Criação dos documentos de planejamento para as 3 fases: (1) Processo de Autenticação (redirect, login, callback, token), (2) Processo de Refresh, (3) Processos adicionais, exemplos de código, tabela de erros
+  - Objetivo: tornar docs/integration/auth-code-flow-integration.md o guia definitivo para desenvolvedores integrarem o login
+- **Features/fixes criados:** 013-review-auth-code-flow-documentation (apenas planejamento)
+- **Tasks concluídas:** —
+- **Próximas atividades:** Implementar Fase 1 conforme [fase-1-processo-autenticacao.md](features/013-review-auth-code-flow-documentation/fase-1-processo-autenticacao.md)
+
+### Sessão 25 — 2026-03-10
+- **Atividades realizadas:**
+  - Implementação completa da Feature 013 — Revisão e Aprimoramento da Documentação Auth Code Flow
+  - Fase 1: Seção "Processo de Autenticação — Passo a Passo" (1.1 redirect, 1.2 POST /auth/login, 1.3 callback, 1.4 POST /auth/token); tabelas de erros login e token; correção formato JSON (error_code); TTL 40s do code
+  - Fase 2: Seção "Processo de Refresh — Passo a Passo" (when, request, response, fluxo interceptor, rotação); tabela de erros refresh; precaução contra loop infinito
+  - Fase 3: Ordem de implementação recomendada; JWKS e validação JWT (kid); logout local e futuro; exemplos Go (json.Marshal), TypeScript (SPA), interceptor conceitual; tabela consolidada de erros
+- **Features/fixes concluídos:** 013-review-auth-code-flow-documentation
 - **Tasks concluídas:** 3/3 fases
 - **Próximas atividades:** Próxima feature conforme TRACKER
 

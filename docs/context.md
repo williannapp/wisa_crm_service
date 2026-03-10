@@ -127,4 +127,5 @@ A aplicação do cliente, ao receber o JWT, **deve obrigatoriamente**:
 
 ## Referências Relacionadas
 
-- [Solução 2 — Arquitetura de Autenticação e Gestão de Assinaturas](./docs/DON'T READ/ideias/ideias.md)
+- [Integração com o Fluxo de Authorization Code](./integration/auth-code-flow-integration.md) — Guia definitivo para desenvolvedores integrarem o login em suas aplicações
+- [Solução 2 — Arquitetura de Autenticação e Gestão de Assinaturas](./DON'T READ/ideias/ideias.md)
