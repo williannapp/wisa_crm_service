@@ -35,14 +35,15 @@ type LoginOutput struct {
 // AuthenticateUserUseCase orchestrates the login flow.
 // Per ADR-010: returns redirect URL with code; client exchanges code for JWT via POST /auth/token.
 type AuthenticateUserUseCase struct {
-	tenantRepo          repository.TenantRepository
-	productRepo         repository.ProductRepository
-	userRepo            repository.UserRepository
-	subscriptionRepo    repository.SubscriptionRepository
-	userProductAccRepo  repository.UserProductAccessRepository
-	passwordSvc         service.PasswordService
-	authCodeStore       service.AuthCodeStore
-	redirectBaseDomain  string
+	tenantRepo         repository.TenantRepository
+	productRepo        repository.ProductRepository
+	userRepo           repository.UserRepository
+	subscriptionRepo   repository.SubscriptionRepository
+	userProductAccRepo repository.UserProductAccessRepository
+	passwordSvc        service.PasswordService
+	authCodeStore      service.AuthCodeStore
+	redirectBaseDomain string
+	redirectScheme     string // "http" ou "https"
 }
 
 // NewAuthenticateUserUseCase creates a new AuthenticateUserUseCase.
@@ -55,7 +56,11 @@ func NewAuthenticateUserUseCase(
 	passwordSvc service.PasswordService,
 	authCodeStore service.AuthCodeStore,
 	redirectBaseDomain string,
+	redirectScheme string,
 ) *AuthenticateUserUseCase {
+	if redirectScheme == "" {
+		redirectScheme = "https"
+	}
 	return &AuthenticateUserUseCase{
 		tenantRepo:         tenantRepo,
 		productRepo:        productRepo,
@@ -65,6 +70,7 @@ func NewAuthenticateUserUseCase(
 		passwordSvc:        passwordSvc,
 		authCodeStore:      authCodeStore,
 		redirectBaseDomain: redirectBaseDomain,
+		redirectScheme:     redirectScheme,
 	}
 }
 
@@ -158,8 +164,8 @@ func (uc *AuthenticateUserUseCase) Execute(ctx context.Context, input LoginInput
 
 	// 8. Build redirect URL (tenant_slug.base_domain/product_slug/callback?code=...&state=...)
 	stateEnc := url.QueryEscape(input.State)
-	redirectURL := fmt.Sprintf("https://%s.%s/%s/callback?code=%s&state=%s",
-		tenant.Slug, uc.redirectBaseDomain, product.Slug, code, stateEnc)
+	redirectURL := fmt.Sprintf("%s://%s.%s/%s/callback?code=%s&state=%s",
+		uc.redirectScheme, tenant.Slug, uc.redirectBaseDomain, product.Slug, code, stateEnc)
 
 	return &LoginOutput{RedirectURL: redirectURL}, nil
 }

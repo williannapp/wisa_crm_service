@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { AuthService, LoginRequest } from '../../../core/auth/auth.service';
@@ -14,7 +15,7 @@ import { AuthService, LoginRequest } from '../../../core/auth/auth.service';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './login-page.component.html',
   styleUrl: './login-page.component.scss',
 })

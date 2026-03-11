@@ -39,17 +39,21 @@ WHERE NOT EXISTS (
   AND product_id = '08790000-0000-0000-0000-000000000000'::uuid
 );
 
--- User (senha: senha123)
+-- User (senha: senha123) — bcrypt cost 12
+-- Hash gerado com: go run scripts/gen_bcrypt.go senha123 12
 INSERT INTO wisa_crm_db.users (id, tenant_id, name, email, password_hash, status)
 VALUES (
   '89552410-0000-0000-0000-000000000000'::uuid,
   '08940000-0000-0000-0000-000000000000'::uuid,
   'Willianna',
   'willianna@lingeries.com.br',
-  '123456',
+  '$2a$12$XKuJedvcWUgND0DU4bkHRe2FFFoHNedtHanKXJbln4TUhA69vYfY6',
   'active'
 )
-ON CONFLICT (tenant_id, email) DO NOTHING;
+ON CONFLICT (tenant_id, email) DO UPDATE SET
+  password_hash = EXCLUDED.password_hash,
+  name = EXCLUDED.name,
+  status = EXCLUDED.status;
 
 -- UserProductAccess
 INSERT INTO wisa_crm_db.user_product_access (user_id, product_id, tenant_id, access_profile)

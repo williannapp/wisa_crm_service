@@ -110,6 +110,7 @@ func main() {
 
 			authCodeStore := cache.NewRedisAuthCodeStore(redisClient)
 			redirectBaseDomain := getEnv("JWT_AUD_BASE_DOMAIN", "app.wisa-crm.com")
+			redirectScheme := getEnv("REDIRECT_SCHEME", "https") // "http" para dev local sem TLS
 
 			authenticateUser := auth.NewAuthenticateUserUseCase(
 				tenantRepo,
@@ -120,6 +121,7 @@ func main() {
 				passwordSvc,
 				authCodeStore,
 				redirectBaseDomain,
+				redirectScheme,
 			)
 			refreshTokenRepo := persistence.NewGormRefreshTokenRepository(db)
 			refreshTokenGen := crypto.NewRefreshTokenGenerator()

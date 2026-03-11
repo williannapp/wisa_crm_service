@@ -40,6 +40,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       JWT_PRIVATE_KEY_PATH: /app/private.pem
       JWT_AUD_BASE_DOMAIN: wisa.labs.com.br
+      REDIRECT_SCHEME: http
     volumes:
       - ./backend/private.pem:/app/private.pem:ro
     depends_on:
@@ -66,6 +67,8 @@ services:
     environment:
       PORT: 8081
       AUTH_SERVER_URL: http://auth.wisa.labs.com.br
+      # Issuer deve coincidir com o claim iss do JWT emitido pelo auth backend
+      JWT_ISSUER: wisa-crm-service
       TENANT_SLUG: lingerie-maria
       PRODUCT_SLUG: gestao-pocket
       APP_URL: http://lingerie-maria.wisa.labs.com.br
@@ -91,6 +94,10 @@ services:
       - frontend
       - test-app-backend
       - test-app-frontend
+    networks:
+      default:
+        aliases:
+          - auth.wisa.labs.com.br
 
 volumes:
   postgres_data:
